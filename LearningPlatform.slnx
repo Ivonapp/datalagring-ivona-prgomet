@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="LearningPlatform.Application/LearningPlatform.Application.csproj" />
+  <Project Path="LearningPlatform.Domain/LearningPlatform.Domain.csproj" />
+  <Project Path="LearningPlatform.Infrastructure/LearningPlatform.Infrastructure.csproj" />
+  <Project Path="LearningPlatform.Presentation/LearningPlatform.Presentation.csproj" />
+  <Project Path="LearningPlatform.Tests/LearningPlatform.Tests.csproj" />
+</Solution>
