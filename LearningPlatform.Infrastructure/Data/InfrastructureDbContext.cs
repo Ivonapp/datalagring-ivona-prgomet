@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 namespace LearningPlatform.Infrastructure.Data;
 
 public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbContext> options) : DbContext(options)
+
 {
    
 

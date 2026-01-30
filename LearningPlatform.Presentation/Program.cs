@@ -3,8 +3,8 @@ using LearningPlatform.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<InfrastructureDbContext>(options => options.UseAzureSql(
-    builder.Configuration.GetConnectionString("MemberDatabase"),
+builder.Services.AddDbContext<InfrastructureDbContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
     sql => sql.MigrationsAssembly("LearningPlatform.Infrastructure")
 ));
 
