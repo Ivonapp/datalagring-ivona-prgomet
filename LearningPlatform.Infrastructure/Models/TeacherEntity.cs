@@ -13,7 +13,7 @@ public class TeacherEntity
 
 
 
-
+    
 
     //RELATION I INFRASTRUKTUREDBCONTEXT
     public ICollection<CourseSessionEntity> CourseSessions { get; set; } = [];
