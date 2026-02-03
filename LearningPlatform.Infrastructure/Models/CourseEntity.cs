@@ -7,4 +7,8 @@ public class CourseEntity
     public string Title { get; set; }
     public string Description { get; set; }
 
+
+
+    //RELATION I INFRASTRUKTUREDBCONTEXT
+    public ICollection<CourseSessionEntity> CourseSessions { get; set; } = [];
 }

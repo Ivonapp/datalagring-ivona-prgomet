@@ -7,7 +7,14 @@ namespace LearningPlatform.Infrastructure.Data;
 public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbContext> options) : DbContext(options)
 
 {
-   
+    public DbSet<CourseEntity> Courses { get; set; } //Såg att Emil hade såhär i sin kod. La till S efter alla klassnamn. Hans hade lite annorlunda i sin video. Kanske förändrar senare.
+    public DbSet<CourseSessionEntity> CourseSessions { get; set; } //Såg att Emil hade såhär i sin kod. La till S efter alla klassnamn. Hans hade lite annorlunda i sin video. Kanske förändrar senare.
+    public DbSet<EnrollmentEntity> Enrollments { get; set; } //Såg att Emil hade såhär i sin kod. La till S efter alla klassnamn. Hans hade lite annorlunda i sin video. Kanske förändrar senare.
+    public DbSet<ParticipantEntity> Participants { get; set; } //Såg att Emil hade såhär i sin kod. La till S efter alla klassnamn. Hans hade lite annorlunda i sin video. Kanske förändrar senare.
+    public DbSet<TeacherEntity> Teachers { get; set; } //Såg att Emil hade såhär i sin kod. La till S efter alla klassnamn. Hans hade lite annorlunda i sin video. Kanske förändrar senare.
+
+
+    //(Allt nedan har klurats ihop med Hans videos. INGENTING FRÅN CHATGPT.)
 
     //OnModelCreating = bestämmer hur tabellerna ska se ut i databasen
 
@@ -34,6 +41,14 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                      entity.Property(e => e.Description)                                // DESCRIPTION
                      .HasMaxLength(500)
                      .IsRequired(false);
+
+
+
+                    //Relationer - kan vara att jag ändrar sen
+                    entity.HasMany(c => c.CourseSessions)
+                    .WithOne(cs => cs.Course)
+                    .HasForeignKey(cs => cs.CourseId);
+
                 });
 
 
@@ -60,6 +75,22 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.EndDate)                                     // SLUT DATUM
                     .IsRequired();
 
+
+
+
+
+                    //Relationer - kan vara att jag ändrar sen
+                    entity.HasOne(cs => cs.Course)
+                          .WithMany(c => c.CourseSessions)
+                          .HasForeignKey(cs => cs.CourseId);
+
+                    entity.HasMany(cs => cs.Enrollments)
+                          .WithOne(e => e.CourseSession)
+                          .HasForeignKey(e => e.CourseSessionId);
+
+                    entity.HasMany(cs => cs.Teachers)
+                          .WithMany(t => t.CourseSessions);
+
                 });
 
 
@@ -78,6 +109,19 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
 
                     entity.Property(e => e.EnrollmentDate)                              // ENROLLMENTDATE
                     .IsRequired();
+
+
+
+
+                    //Relationer - kan vara att jag ändrar sen
+                    entity.HasOne(e => e.CourseSession)
+                    .WithMany(cs => cs.Enrollments)
+                    .HasForeignKey(e => e.CourseSessionId);
+
+                    entity.HasOne(e => e.Participant)
+                    .WithMany(p => p.Enrollments)
+                    .HasForeignKey(e => e.ParticipantId);
+
 
                 });
 
@@ -113,6 +157,16 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .HasMaxLength(15)                                                   // MAX ANTAL TECKEN FÖR NUMMER
                     .IsUnicode(false)                                                   // TAR BORT SPECIALTECKEN
                     .IsRequired();                                                      // TELEFONNUMMER ÄR OBLIGATORISKT
+
+
+
+
+                    //Relationer - kan vara att jag ändrar sen
+                    entity.HasMany(p => p.Enrollments)
+                    .WithOne(e => e.Participant)
+                    .HasForeignKey(e => e.ParticipantId);
+
+
                 });
 
 
@@ -152,6 +206,18 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.Major)                                       // MAJOR / SKOLÄMNE
                     .HasMaxLength(100)                                                  // MAX ANTAL TECKEN FÖR ÄMNE
                     .IsRequired();                                                      // ÄMNE ÄR OBLIGATORISKT
+
+
+
+
+
+
+                    //RELATIONER kANSKE behöver ändra denna. Just nu kan fler lärare ha samma kurs
+                    entity.HasMany(t => t.CourseSessions)
+                    .WithMany(cs => cs.Teachers);
+
+
+
                 });
 
 
