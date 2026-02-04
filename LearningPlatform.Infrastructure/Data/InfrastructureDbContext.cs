@@ -158,7 +158,8 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .IsUnicode(false)                                                   // TAR BORT SPECIALTECKEN
                     .IsRequired();                                                      // TELEFONNUMMER ÄR OBLIGATORISKT
 
-
+                    entity.Property(e => e.CreatedAt)                                   // LAS NYLIGEN TILL. TID. 
+                    .IsRequired();                                                      // LAS NYLIGEN TILL. TID. 
 
 
                     //Relationer - kan vara att jag ändrar sen
