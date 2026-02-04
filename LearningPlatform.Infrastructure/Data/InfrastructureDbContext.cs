@@ -42,6 +42,17 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                      .HasMaxLength(500)
                      .IsRequired(false);
 
+                    //TILLAGT. La till extra properties i klassen Course.
+                    entity.Property(e => e.CourseCode)
+                        .IsRequired();
+
+                    entity.Property(e => e.CreatedAt)
+                        .IsRequired();
+
+                    entity.Property(e => e.UpdatedAt)
+                        .IsRequired(false);
+
+
 
 
                     //Relationer - kan vara att jag ändrar sen
@@ -76,6 +87,12 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .IsRequired();
 
 
+                    //TILLAGT. La till extra properties i klassen CourseSession.
+                    entity.Property(e => e.CreatedAt)
+                    .IsRequired();
+
+                    entity.Property(e => e.UpdatedAt)
+                    .IsRequired(false);
 
 
 
@@ -111,6 +128,15 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .IsRequired();
 
 
+                    //TILLAGT. La till extra properties i klassen Enrollment.
+                    entity.Property(e => e.ParticipantId)
+                    .IsRequired();
+
+                    entity.Property(e => e.CourseSessionId)
+                    .IsRequired();
+
+                    entity.Property(e => e.UpdatedAt)
+                    .IsRequired(false);
 
 
                     //Relationer - kan vara att jag ändrar sen
@@ -159,7 +185,13 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .IsRequired();                                                      // TELEFONNUMMER ÄR OBLIGATORISKT
 
                     entity.Property(e => e.CreatedAt)                                   // LAS NYLIGEN TILL. TID. 
-                    .IsRequired();                                                      // LAS NYLIGEN TILL. TID. 
+                    .IsRequired();
+
+
+
+                    //TILLAGT. La till extra properties i klassen Participant.
+                    entity.Property(e => e.UpdatedAt)
+                    .IsRequired(false);
 
 
                     //Relationer - kan vara att jag ändrar sen
@@ -208,9 +240,13 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .HasMaxLength(100)                                                  // MAX ANTAL TECKEN FÖR ÄMNE
                     .IsRequired();                                                      // ÄMNE ÄR OBLIGATORISKT
 
+                    entity.Property(e => e.CreatedAt)
+                    .IsRequired();
 
 
-
+                    //TILLAGT. La till extra properties i klassen Teacher.
+                    entity.Property(e => e.UpdatedAt)
+                    .IsRequired(false);
 
 
                     //RELATIONER kANSKE behöver ändra denna. Just nu kan fler lärare ha samma kurs

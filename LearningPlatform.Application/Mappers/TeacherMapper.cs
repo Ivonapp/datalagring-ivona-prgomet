@@ -6,21 +6,22 @@ using LearningPlatform.Infrastructure.Models;
 
 namespace LearningPlatform.Application.Mappers
 {
-    public class CourseSessionMapper
+    public class TeacherMapper
     {
 
 
         //Mappers är "MEDLARE" MELLAN APPLICATION DTO OCH INFRASTRUCTURE MODELS
         //                          DTOs -> Entity
-
-        public static CourseSessionDto ToCourseSessionDto(CourseSessionEntity entity) => new()
+        public static TeacherDto ToTeacherDto(TeacherEntity entity) => new()
         {
             Id = entity.Id,
-            CourseId = entity.CourseId,
-            StartDate = entity.StartDate,
-            EndDate = entity.EndDate,
-            CreatedAt = entity.CreatedAt,
-            UpdatedAt = entity.UpdatedAt
+            FirstName = entity.FirstName,
+            LastName = entity.LastName,
+            Email = entity.Email,
+            PhoneNumber = entity.PhoneNumber,
+            Major = entity.Major,
+            CreatedAt = entity.CreatedAt
+
         };
     }
 }

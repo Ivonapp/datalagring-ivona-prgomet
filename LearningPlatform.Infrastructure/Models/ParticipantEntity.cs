@@ -9,8 +9,8 @@ public class ParticipantEntity
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow; //När användaren skapades
-
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  //När användaren skapades
+    public DateTime? UpdatedAt { get; set; }                    //När användaren uppdaterades senast
 
 
     //RELATION I INFRASTRUKTUREDBCONTEXT
