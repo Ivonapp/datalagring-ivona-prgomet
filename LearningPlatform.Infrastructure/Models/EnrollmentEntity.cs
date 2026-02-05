@@ -1,6 +1,8 @@
 ﻿
 namespace LearningPlatform.Infrastructure.Models;
 
+
+//BYTA NAMN PÅ MAPPEN MODELS TILL ENTITIES ISTÄLLET
 public class EnrollmentEntity
 {
     public int Id { get; set; }

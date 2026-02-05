@@ -1,5 +1,8 @@
 ﻿namespace LearningPlatform.Infrastructure.Models;
 
+
+
+//BYTA NAMN PÅ MAPPEN MODELS TILL ENTITIES ISTÄLLET
 public class CourseEntity
 {
     public int Id { get; set; }
