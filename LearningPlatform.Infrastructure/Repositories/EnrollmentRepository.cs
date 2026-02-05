@@ -6,5 +6,7 @@ namespace LearningPlatform.Infrastructure.Repositories
 {
     internal class EnrollmentRepository
     {
+
+        // HÄR SKA DU ANVÄNDA EN TOMODEL FÖR ATT ÖVERSÄTTA ENTITY OCH DTO (TROR JAG???)
     }
 }

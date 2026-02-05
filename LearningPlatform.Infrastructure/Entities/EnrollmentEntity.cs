@@ -1,5 +1,4 @@
-﻿
-namespace LearningPlatform.Infrastructure.Models;
+﻿namespace LearningPlatform.Infrastructure.Entities;
 
 
 //BYTA NAMN PÅ MAPPEN MODELS TILL ENTITIES ISTÄLLET

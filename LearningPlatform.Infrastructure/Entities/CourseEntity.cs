@@ -1,4 +1,4 @@
-﻿namespace LearningPlatform.Infrastructure.Models;
+﻿namespace LearningPlatform.Infrastructure.Entities;
 
 
 

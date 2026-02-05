@@ -1,4 +1,4 @@
-﻿using LearningPlatform.Infrastructure.Models;
+﻿using LearningPlatform.Infrastructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 

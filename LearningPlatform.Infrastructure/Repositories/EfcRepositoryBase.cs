@@ -55,8 +55,7 @@ public abstract class EfcRepositoryBase<TEntity, TKey, TModel>(InfrastructureDbC
         {
         var entities = await Set.AsNoTracking().ToListAsync(ct);
         return [.. entities.Select(ToModel)];
-        }
-
+    }
 }
 
 
