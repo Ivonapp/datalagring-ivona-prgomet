@@ -38,7 +38,7 @@ public abstract class EfcRepositoryBase<TEntity, TKey, TModel>(InfrastructureDbC
         if (entity is null) return;
 
         Set.Remove(entity);
-        await Context.SaveChangesAsync(ct); //OM JAG LÄGGER TILL UNITOFWORK SÅ SKA DENNA TAS BORT.
+        await Context.SaveChangesAsync(ct);                                             //OM JAG LÄGGER TILL UnitOfWork SÅ SKA DENNA TAS BORT.
     }
 
 

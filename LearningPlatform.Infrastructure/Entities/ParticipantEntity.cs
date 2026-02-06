@@ -1,7 +1,7 @@
 ﻿namespace LearningPlatform.Infrastructure.Entities;
 
 
-//BYTA NAMN PÅ MAPPEN MODELS TILL ENTITIES ISTÄLLET
+//STRUKTUR - ENTITIES LIGGER I INFRASTRUCTURE SOM HANS LAGT
 public class ParticipantEntity
 {
     public int Id { get; set; }

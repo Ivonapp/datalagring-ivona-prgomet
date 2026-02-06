@@ -1,5 +1,5 @@
 ﻿using LearningPlatform.Application.DTOs;
-using LearningPlatform.Infrastructure.Models;
+using LearningPlatform.Infrastructure.Entities;
 
 // *** SKapa alla klasserna som MAPPERS-klasser innan du går vidare ***
 

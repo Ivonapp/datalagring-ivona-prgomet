@@ -1,9 +1,12 @@
-﻿namespace LearningPlatform.Infrastructure.Entities;
+﻿using LearningPlatform.Application.Abstractions.Persistence;
+
+namespace LearningPlatform.Infrastructure.Entities;
 
 
-//BYTA NAMN PÅ MAPPEN MODELS TILL ENTITIES ISTÄLLET
-public class TeacherEntity
+//STRUKTUR - ENTITIES LIGGER I INFRASTRUCTURE SOM HANS LAGT
+public class TeacherEntity : IEntity<int>
 {
+
     public int Id { get; set; }
     public byte[] Concurrency { get; set; } = null!; //SÄKERHET
     public string FirstName { get; set; } = null!;
@@ -19,5 +22,4 @@ public class TeacherEntity
 
     //RELATION I INFRASTRUKTUREDBCONTEXT
     public ICollection<CourseSessionEntity> CourseSessions { get; set; } = [];
-
 }

@@ -1,8 +1,7 @@
-﻿using LearningPlatform.Application.DTOs;
-
+﻿using LearningPlatform.Application.Teachers.PersistenceModels;
 namespace LearningPlatform.Application.Abstractions.Persistence.Repositories;
 
-public interface ITeacherRepository : IRepositoryBase<>
+public interface ITeacherRepository : IRepositoryBase<TeacherModel, int>
 {
 }
- 
+
