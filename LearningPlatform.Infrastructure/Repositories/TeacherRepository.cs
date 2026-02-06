@@ -12,9 +12,7 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
 {
 
 
-
-
-            // MODEL
+            // MODEL - STÅR I EfcRepositoryBase
             // (MHÄMTAR UT LÄRARE, MATCHAR ALLT SOM STÅR I TEACHERMODEL)
             public override TeacherModel ToModel(TeacherEntity entity) => new(
                     entity.Id,
@@ -30,7 +28,7 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
 
 
 
-            // ADD
+            // ADD - STÅR I EfcRepositoryBase
             // (KONTROLLERAR ATT ID INTE ÄR TOMT - OM LÄRARE ÄR TOM SÅ SKICKAS EXCEPTION UT)
             public override async Task AddAsync(TeacherModel model, CancellationToken ct = default)
             {
@@ -59,9 +57,7 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
 
 
 
-
-            // UPDATE
-            //
+            // UPDATE STÅR I EfcRepositoryBase
             public override async Task UpdateAsync(TeacherModel model, CancellationToken ct = default)
             {
                 var entity = await Set.SingleOrDefaultAsync(x => x.Id == model.Id, ct)
@@ -78,20 +74,24 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
 
                 await Context.SaveChangesAsync(ct); //Om jag ska använda UnitOfWork så radera denna raden (UnitOfWork samlar typ alla dessa i en "egen" klass.)
             }
-        }
-
-
-    
 
 
 
 
+            // EMAIL - Att se till att ingen kan registrera sig med en mejladress som redan är upptagen - INTERFACET
+            // lägg till
+            // Task<bool> EmailExistsAsync(string email, CancellationToken ct = default);
+            // i ITeacherRepository interfacet (ENDAST DENNA SKA STÅ I INTERFACE då det ENDAST ska vara TEACHER som står där)
 
+            public async Task<bool> EmailAlreadyExistsAsync(string email, CancellationToken ct = default)
 
+                {
+                var normalized = email.Trim();
 
+                return await Set
+                .AsNoTracking()
+                .AnyAsync(x => x.Email == normalized, ct);
 
-
-
-
-
+                }
+            }
 
