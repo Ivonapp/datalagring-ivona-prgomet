@@ -1,16 +1,14 @@
-﻿namespace LearningPlatform.Application.DTOs;
+﻿
+//FÖRSÖKER FÖRSTÅ OCH FIXA TILL DENNA DELEN > TEACHERMAPPER
 
-public class TeacherDto
+
+namespace LearningPlatform.Application.Teachers.Inputs;
+
+public class TeacherInput
 {
-    public int Id { get; set; }
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
     public string Major { get; set; } = null!;
-    public DateTime CreatedAt { get; set; }
 }
-
-
-
-// TROR DESSA SKA RADERAS EFTERSOM DU NU HAR PERSISTENCE MODELS

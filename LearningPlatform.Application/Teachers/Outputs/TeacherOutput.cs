@@ -1,6 +1,11 @@
-﻿namespace LearningPlatform.Application.DTOs;
+﻿
 
-public class TeacherDto
+//FÖRSÖKER FÖRSTÅ OCH FIXA TILL DENNA DELEN > TEACHERMAPPER
+
+
+namespace LearningPlatform.Application.Teachers.Outputs;
+
+public class TeacherOutput
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
@@ -10,7 +15,3 @@ public class TeacherDto
     public string Major { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
 }
-
-
-
-// TROR DESSA SKA RADERAS EFTERSOM DU NU HAR PERSISTENCE MODELS

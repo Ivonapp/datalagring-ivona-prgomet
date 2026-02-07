@@ -7,3 +7,6 @@ public class EnrollmentDto
     public int ParticipantId { get; set; }          //kopplingen till participant. Lite osäker på denna men låter den vara sålänge. 
     public DateTime EnrollmentDate { get; set; }
 }
+
+
+// TROR DESSA SKA RADERAS EFTERSOM DU NU HAR PERSISTENCE MODELS

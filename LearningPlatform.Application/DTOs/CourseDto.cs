@@ -10,3 +10,6 @@ public class CourseDto
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }
+
+
+// TROR DESSA SKA RADERAS EFTERSOM DU NU HAR PERSISTENCE MODELS

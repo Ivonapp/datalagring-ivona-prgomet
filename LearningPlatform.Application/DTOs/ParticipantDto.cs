@@ -10,3 +10,6 @@ public class ParticipantDto
     public DateTime CreatedAt { get; set; } //När användaren skapades
 
 }
+
+
+// TROR DESSA SKA RADERAS EFTERSOM DU NU HAR PERSISTENCE MODELS

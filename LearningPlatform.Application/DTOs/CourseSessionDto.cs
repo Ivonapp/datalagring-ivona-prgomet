@@ -10,3 +10,5 @@ public class CourseSessionDto
     public DateTime? UpdatedAt { get; set; }    // Tidpunkt för sessionens senaste ändring
 
 }
+
+// TROR DESSA SKA RADERAS EFTERSOM DU NU HAR PERSISTENCE MODELS

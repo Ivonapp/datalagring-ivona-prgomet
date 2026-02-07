@@ -11,8 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Teachers\Inputs\" />
-    <Folder Include="Teachers\Outputs\" />
+    <Folder Include="Participants\Inputs\" />
+    <Folder Include="Participants\Outputs\" />
   </ItemGroup>
 
 </Project>
