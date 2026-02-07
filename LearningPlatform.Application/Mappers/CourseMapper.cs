@@ -1,4 +1,72 @@
-﻿using LearningPlatform.Application.DTOs;
+﻿using LearningPlatform.Application.Courses.Inputs;
+using LearningPlatform.Application.Courses.Outputs;
+using LearningPlatform.Application.Courses.PersistenceModels;
+
+
+        //                 NY KOD
+        //                 Entity <-> Model
+
+        namespace LearningPlatform.Application.Mappers;
+
+        public class CourseMapper
+        {
+
+            //                  OUTPUTS
+            public static CourseOutput ToOutput(CourseModel model) => new()
+            {
+                Id = model.Id,
+                CourseCode = model.CourseCode,
+                Concurrency = model.Concurrency,
+                Title = model.Title,
+                Description = model.Description,
+                CreatedAt = model.CreatedAt,
+                UpdatedAt = model.UpdatedAt
+            };
+
+
+            //                  INPUTS - CourseInput
+
+            // (DET ANVÄNDAREN SKRIVER IN! CreatedAt behövs alltså inte här, då ju användaren inte skriver in dagens datum te.x.)
+            // Har äntligen förstått nedan del, och varför man skriver som man gör. I detta fallet har INPUTS endast ParticipantId OCH CourseSessionId,
+            // Men eftersom EnrollmentModel har 6 element, så behöver vi fylla i 6 element nedan med.
+            // I alla andra element än ParticipantId och CourseSessionId fyller vi alltså i 0, [], DateTime.UtcNow och null. 
+            public static CourseModel ToModel(CourseInput input) => new(
+                0,
+                input.CourseCode,
+                [],
+                input.Title,
+                input.Description,
+                DateTime.UtcNow,
+                null
+            );
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//                              GAMMAL KOD
+//                              Entity <-> DTO
+
+
+/*using LearningPlatform.Application.DTOs;
 using LearningPlatform.Infrastructure.Models;
 
 // *** SKapa alla klasserna som MAPPERS-klasser innan du går vidare ***
@@ -23,5 +91,5 @@ namespace LearningPlatform.Application.Mappers
 
         };
     }
-}
+}*/
 

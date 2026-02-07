@@ -2,16 +2,10 @@
 using LearningPlatform.Application.Teachers.Outputs;
 using LearningPlatform.Application.Teachers.PersistenceModels;
 
-// *** SKapa alla klasserna som MAPPERS-klasser innan du går vidare ***
 
 
-
-
-
-
-//                              NY KOD
-//                              Entity <-> Model
-
+            //                 NY KOD
+            //                 Entity <-> Model
 
             namespace LearningPlatform.Application.Mappers;
 
@@ -33,8 +27,8 @@ using LearningPlatform.Application.Teachers.PersistenceModels;
                 };
 
 
-    //                  NEDAN FICK HJÄLP AV CHATGPT
-    //                  INPUTS
+            //                  NEDAN FICK HJÄLP AV CHATGPT
+            //                  INPUTS
                 public static TeacherModel ToModel(TeacherInput input) => new(
                     0,
                     input.FirstName,

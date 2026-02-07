@@ -1,4 +1,9 @@
-﻿namespace LearningPlatform.Application.Teachers.PersistenceModels;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+
+namespace LearningPlatform.Application.Teachers.PersistenceModels;
 
 
 public sealed record TeacherModel( //TeacherModel skriver du i ITeacherRepository.cs

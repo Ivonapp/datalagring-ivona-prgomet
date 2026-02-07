@@ -1,6 +1,4 @@
-﻿using LearningPlatform.Application.Abstractions.Persistence;
-using LearningPlatform.Application.Teachers.PersistenceModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 

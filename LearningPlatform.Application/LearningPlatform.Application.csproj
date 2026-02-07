@@ -10,9 +10,4 @@
     <ProjectReference Include="..\LearningPlatform.Domain\LearningPlatform.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Participants\Inputs\" />
-    <Folder Include="Participants\Outputs\" />
-  </ItemGroup>
-
 </Project>
