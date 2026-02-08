@@ -1,6 +1,8 @@
 ﻿
+using LearningPlatform.Application.Enrollments.PersistenceModels;
+
 namespace LearningPlatform.Application.Abstractions.Persistence.Repositories;
 
-public interface IEnrollmentRepository : IRepositoryBase<>
+public interface IEnrollmentRepository : IRepositoryBase<EnrollmentModel, int>
 {
 }
