@@ -1,20 +1,19 @@
-﻿
-using LearningPlatform.Application.Abstractions;
+﻿using LearningPlatform.Application.Abstractions;
 using LearningPlatform.Application.Abstractions.Persistence;
-using LearningPlatform.Infrastructure.Data;
+using LearningPlatform.Infrastructure.EFC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-namespace LearningPlatform.Infrastructure.Repositories;
+namespace LearningPlatform.Infrastructure.EFC.Repositories;
 
 
 // FÖLJDE HANS KOD NEDAN I HANS VIDEO DÅ HANS KOD VAR MER DEN STRUKTUREN JAG VILLE HA ÄN T EX EMILS KOD. 
 // KOMMER GÅ IGENOM KODEN NEDAN MER NOGGRANT SENARE, DÅ DEN KUNDE VARA RÄTT SVÅR ATT FÖRSTÅ
 //GÅR HAND I HAND MED IREPOSITORYBASE.CS
-public abstract class EfcRepositoryBase<TEntity, TKey, TModel>(InfrastructureDbContext Context) : IRepositoryBase<TModel, TKey> where TEntity : class, IEntity<TKey>
+public abstract class EfcRepositoryBase<TEntity, TKey, TModel>(InfrastructureDbContext context) : IRepositoryBase<TModel, TKey> where TEntity : class, IEntity<TKey>
 {
 
     // KOPPLING TILL SJÄLVASTE DATABASDELEN (InfrastructureDbContext.cs)
-    protected InfrastructureDbContext Context { get; } = Context;
+    protected InfrastructureDbContext Context { get; } = context;
     protected DbSet<TEntity> Set => Context.Set<TEntity>();
 
 
@@ -28,7 +27,6 @@ public abstract class EfcRepositoryBase<TEntity, TKey, TModel>(InfrastructureDbC
 
 
 
-
     // GENERELLA HÄMTNINGS-DELAR
 
     // DELETE
@@ -38,7 +36,7 @@ public abstract class EfcRepositoryBase<TEntity, TKey, TModel>(InfrastructureDbC
         if (entity is null) return;
 
         Set.Remove(entity);
-        await Context.SaveChangesAsync(ct);                                             //OM JAG LÄGGER TILL UnitOfWork SÅ SKA DENNA TAS BORT.
+
     }
 
 

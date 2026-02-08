@@ -1,4 +1,4 @@
-﻿namespace LearningPlatform.Infrastructure.Entities;
+﻿namespace LearningPlatform.Infrastructure.EFC.Entities;
 
 
 //STRUKTUR - ENTITIES LIGGER I INFRASTRUCTURE SOM HANS LAGT

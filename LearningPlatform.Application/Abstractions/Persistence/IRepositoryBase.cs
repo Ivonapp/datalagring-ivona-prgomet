@@ -1,12 +1,12 @@
 ﻿
 namespace LearningPlatform.Application.Abstractions.Persistence;
 
+
+
 public interface IRepositoryBase<TModel, in TKey>
 
 {
-    // HANS KOD ATT JÄMFÖRA MED
-    //Skapa sen alla klasserna med separata interfaces, nedan är bara det Hans visade i sin video
-    //INTERFACE
+    // ETT "BAS-INTERFACE" för ALLA klasser, som gör att man slipper upprepa kod.
     //CRUD
     Task<TModel?> GetByIdAsync(TKey id, CancellationToken ct = default);
     Task <IReadOnlyList<TModel>> ListAsync(CancellationToken ct = default);
@@ -19,32 +19,3 @@ public interface IRepositoryBase<TModel, in TKey>
 
 
 
-
-                                   // EMILS KOD NEDAN ATT JÄMFÖRA MED,
-                                   // Men vi kommer inte utgå från den då den är väldigt svår och rörig
-/*using System.Linq.Expressions;
-
-namespace CoursesManager.Application.Abstractions.Persistence
-{
-    public interface IBaseRepository<TEntity> where TEntity : class
-    {
-        Task<TEntity> CreateAsync(TEntity entity, CancellationToken ct = default);
-        Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> findBy);
-
-        Task<IReadOnlyList<TEntity>> GetAllAsync(
-        Expression<Func<TEntity, bool>>? where = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        bool tracking = false,
-        CancellationToken ct = default,
-        params Expression<Func<TEntity, object>>[] includes);
-
-        Task<IReadOnlyList<TSelect>> GetAllAsync<TSelect>(
-        Expression<Func<TEntity, TSelect>> select,
-        Expression<Func<TEntity, bool>>? where = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-        bool tracking = false,
-        CancellationToken ct = default,
-        params Expression<Func<TEntity, object>>[] includes);
-
-    }
-}*/

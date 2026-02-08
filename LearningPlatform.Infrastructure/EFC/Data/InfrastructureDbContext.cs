@@ -1,8 +1,8 @@
-﻿using LearningPlatform.Infrastructure.Entities;
+﻿using LearningPlatform.Infrastructure.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace LearningPlatform.Infrastructure.Data;
+namespace LearningPlatform.Infrastructure.EFC.Data;
 
 public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbContext> options) : DbContext(options)
 

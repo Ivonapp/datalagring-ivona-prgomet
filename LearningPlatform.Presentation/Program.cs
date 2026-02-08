@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using LearningPlatform.Infrastructure.Data;
+using LearningPlatform.Infrastructure.EFC.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

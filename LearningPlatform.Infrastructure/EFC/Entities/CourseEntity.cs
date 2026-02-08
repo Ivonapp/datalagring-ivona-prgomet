@@ -1,4 +1,4 @@
-﻿namespace LearningPlatform.Infrastructure.Entities;
+﻿namespace LearningPlatform.Infrastructure.EFC.Entities;
 
 
 

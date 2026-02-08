@@ -1,12 +1,12 @@
 ﻿using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Teachers.PersistenceModels;
-using LearningPlatform.Infrastructure.Data;
-using LearningPlatform.Infrastructure.Entities;
+using LearningPlatform.Infrastructure.EFC.Data;
+using LearningPlatform.Infrastructure.EFC.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
-namespace LearningPlatform.Infrastructure.Repositories;
+namespace LearningPlatform.Infrastructure.EFC.Repositories;
 
 public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryBase<TeacherEntity, int, TeacherModel>(Context), ITeacherRepository
 {
@@ -47,11 +47,6 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
                 };
 
                 await Set.AddAsync(entity, ct);               // Lägger till i kön - (utan denna och koden nedan händer ingenting.)
-
-                await Context.SaveChangesAsync(ct);           // SPARA PÅ RIKTIGT - (utan denna och koden nedan händer ingenting.)
-                                                              //Tills jag vet om jag ska ha spar-funktionen i EN UnityOfWork,
-                                                              //eller om den ska implementeras unikt för alla delar.
-                                                              //OM JAG LÄGGER TILL UnitOfWork SÅ SKA DENNA TAS BORT.
             }
 
 
@@ -71,8 +66,6 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
                 entity.PhoneNumber = model.PhoneNumber;
                 entity.Major = model.Major;
                 entity.UpdatedAt = DateTime.UtcNow;
-
-                await Context.SaveChangesAsync(ct); //Om jag ska använda UnitOfWork så radera denna raden (UnitOfWork samlar typ alla dessa i en "egen" klass.)
             }
 
 
