@@ -8,6 +8,9 @@ using System.Collections.Generic;
 
 namespace LearningPlatform.Infrastructure.EFC.Repositories;
 
+
+//FÄRDIG 
+
 public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryBase<TeacherEntity, int, TeacherModel>(Context), ITeacherRepository
 {
 
@@ -84,7 +87,6 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
                 return await Set
                 .AsNoTracking()
                 .AnyAsync(x => x.Email == normalized, ct);
-
                 }
             }
 
