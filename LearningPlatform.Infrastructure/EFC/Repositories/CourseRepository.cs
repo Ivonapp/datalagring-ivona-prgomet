@@ -54,7 +54,7 @@ namespace LearningPlatform.Infrastructure.EFC.Repositories
             public override async Task UpdateAsync(CourseModel model, CancellationToken ct = default)
             {
                 var entity = await Set.SingleOrDefaultAsync(x => x.Id == model.Id, ct)
-                ?? throw new ArgumentException($"Course {model.Id} not found."); //JUSTERA
+                ?? throw new ArgumentException($"Course {model.Id} not found.");
 
                 Context.Entry(entity).Property(x => x.Concurrency).OriginalValue = model.Concurrency;
 

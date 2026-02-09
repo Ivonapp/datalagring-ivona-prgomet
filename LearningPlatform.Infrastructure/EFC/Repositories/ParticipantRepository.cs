@@ -59,15 +59,13 @@ public class ParticipantRepository(InfrastructureDbContext Context) : EfcReposit
 
         Context.Entry(entity).Property(x => x.Concurrency).OriginalValue = model.Concurrency;
 
+        // 1. DATA SOM SKA GÅ ATT ÄNDRA!
         entity.FirstName = model.FirstName;
         entity.LastName = model.LastName;
         entity.Email = model.Email.Trim();
         entity.PhoneNumber = model.PhoneNumber;
-        entity.UpdatedAt = DateTime.UtcNow;
 
-
-        entity.ParticipantId = model.ParticipantId;
-        entity.CourseSessionId = model.CourseSessionId;
+        // 2. TIDSTÄMPEL FÖR ÄNDRINGEN!
         entity.UpdatedAt = DateTime.UtcNow;
     }
 

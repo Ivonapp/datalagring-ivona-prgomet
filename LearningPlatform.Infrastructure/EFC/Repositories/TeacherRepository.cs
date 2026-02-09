@@ -65,11 +65,15 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
 
                 Context.Entry(entity).Property(x => x.Concurrency).OriginalValue = model.Concurrency;
 
+
+                // 1. DATA SOM SKA GÅ ATT ÄNDRA!
                 entity.FirstName = model.FirstName;
                 entity.LastName = model.LastName;
                 entity.Email = model.Email.Trim();
                 entity.PhoneNumber = model.PhoneNumber;
                 entity.Major = model.Major;
+
+                // 2. TIDSTÄMPEL FÖR ÄNDRINGEN!
                 entity.UpdatedAt = DateTime.UtcNow;
             }
 

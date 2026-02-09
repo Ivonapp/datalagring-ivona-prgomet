@@ -61,16 +61,19 @@ namespace LearningPlatform.Infrastructure.EFC.Repositories
 
         //UPDATE
 
-                public override async Task UpdateAsync(EnrollmentModel model, CancellationToken ct = default)
+        public override async Task UpdateAsync(EnrollmentModel model, CancellationToken ct = default)
         {
-            var entity = await Set.SingleOrDefaultAsync(x => x.Id == model.Id, ct)
-                ?? throw new ArgumentException($"Enrollment {model.Id} not found."); //JUSTERA
+             var entity = await Set.SingleOrDefaultAsync(x => x.Id == model.Id, ct)
+                ?? throw new ArgumentException($"Enrollment {model.Id} not found.");
 
-            Context.Entry(entity).Property(x => x.Concurrency).OriginalValue = model.Concurrency;
+                Context.Entry(entity).Property(x => x.Concurrency).OriginalValue = model.Concurrency;
 
-                entity.UpdatedAt = DateTime.UtcNow;
+                // 1. DATA SOM SKA GÅ ATT ÄNDRA!
                 entity.ParticipantId = model.ParticipantId;
                 entity.CourseSessionId = model.CourseSessionId;
+
+                // 2. TIDSTÄMPEL FÖR ÄNDRINGEN!
+                entity.UpdatedAt = DateTime.UtcNow;
         }
     }
 }
