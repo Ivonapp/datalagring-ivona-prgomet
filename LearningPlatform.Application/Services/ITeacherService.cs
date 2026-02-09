@@ -1,4 +1,6 @@
-﻿using LearningPlatform.Application.Teachers.PersistenceModels;
+﻿using LearningPlatform.Application.Teachers.Inputs;
+using LearningPlatform.Application.Teachers.Outputs;
+using LearningPlatform.Application.Teachers.PersistenceModels;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -12,24 +14,25 @@ public interface ITeacherService
 
     //OMBANDLAR HANS KOD SÅ DEN PASSAR I MTT PROJEKT OCH FÖLJER CRUD - INTE SÄKER PÅ OM DETTA STÄMMER !!
 
-    // C - Create (Skapa)
-    Task CreateAsync(TeacherModel model, CancellationToken ct = default);
+    // C
+    // TeacherInput
+    Task CreateAsync(TeacherInput input, CancellationToken ct = default);
 
-    // R - Read (Hämta en)
-    Task<TeacherModel?> GetByIdAsync(int id, CancellationToken ct = default);
+    // R (Hämta EN)
+    // TeacherOutput
+    Task<TeacherOutput?> GetByIdAsync(int id, CancellationToken ct = default);
 
-    // R - Read (Hämta alla)
-    Task<IReadOnlyList<TeacherModel>> ListAsync(CancellationToken ct = default);
+    // R ((Hämta ALLA)
+    // TeacherOutput
+    Task<IReadOnlyList<TeacherOutput>> ListAsync(CancellationToken ct = default);
 
-    // U - Update (Uppdatera)
-    Task UpdateAsync(TeacherModel model, CancellationToken ct = default);
+    // U 
+    // TeacherInput
+    Task UpdateAsync(int id, TeacherInput input, CancellationToken ct = default);
 
-    // D - Delete (Ta bort)
+    // D 
     Task DeleteAsync(int id, CancellationToken ct = default);
-
 }
-
-
 
 
 
