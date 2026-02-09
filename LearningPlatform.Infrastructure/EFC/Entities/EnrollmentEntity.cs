@@ -1,8 +1,10 @@
-﻿namespace LearningPlatform.Infrastructure.EFC.Entities;
+﻿using LearningPlatform.Application.Abstractions.Persistence;
+
+namespace LearningPlatform.Infrastructure.EFC.Entities;
 
 
 //STRUKTUR - ENTITIES LIGGER I INFRASTRUCTURE SOM HANS LAGT
-public class EnrollmentEntity
+public class EnrollmentEntity : IEntity<int>
 {
     public int Id { get; set; }
     public byte[] Concurrency { get; set; } = null!; //SÄKERHET. Denna ska ENDAST finnas i Infrastructure. Emil använder "RowVersion" men jag kör på Hans version "Concurrency"

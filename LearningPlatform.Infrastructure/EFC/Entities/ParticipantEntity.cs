@@ -1,8 +1,10 @@
-﻿namespace LearningPlatform.Infrastructure.EFC.Entities;
+﻿using LearningPlatform.Application.Abstractions.Persistence;
+
+namespace LearningPlatform.Infrastructure.EFC.Entities;
 
 
 //STRUKTUR - ENTITIES LIGGER I INFRASTRUCTURE SOM HANS LAGT
-public class ParticipantEntity
+public class ParticipantEntity : IEntity<int>
 {
     public int Id { get; set; }
     public byte[] Concurrency { get; set; } = null!; //SÄKERHET

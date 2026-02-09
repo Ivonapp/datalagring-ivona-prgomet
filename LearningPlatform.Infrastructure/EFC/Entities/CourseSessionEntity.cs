@@ -1,8 +1,10 @@
-﻿namespace LearningPlatform.Infrastructure.EFC.Entities;
+﻿using LearningPlatform.Application.Abstractions.Persistence;
+
+namespace LearningPlatform.Infrastructure.EFC.Entities;
 
 
 //STRUKTUR - ENTITIES LIGGER I INFRASTRUCTURE SOM HANS LAGT
-public class CourseSessionEntity
+public class CourseSessionEntity : IEntity<int>
 {
     public int Id { get; set; }
     public int CourseId { get; set; }

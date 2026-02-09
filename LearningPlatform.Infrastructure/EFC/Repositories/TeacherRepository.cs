@@ -35,13 +35,15 @@ public class TeacherRepository(InfrastructureDbContext Context) : EfcRepositoryB
             // (KONTROLLERAR ATT ID INTE ÄR TOMT - OM LÄRARE ÄR TOM SÅ SKICKAS EXCEPTION UT)
             public override async Task AddAsync(TeacherModel model, CancellationToken ct = default)
             {
-               if (model.Id == 0) //Chatgpt hjälpte mig med att det endast kan vara 0 för int, och inte "empty." som man gör med Guid.
-               throw new ArgumentException("Teacher Id must be set by the application layer");
+               
+        
+            //if (model.Id == 0) //Chatgpt hjälpte mig med att det endast kan vara 0 för int, och inte "empty." som man gör med Guid.
+            //throw new ArgumentException("Teacher Id must be set by the application layer");   <-- DENNA RADEN ÄR TILLFÄLLIGT UTKOMMENTERAD DÅ DET INTE VERKAT SOM == 0 FUNKAR HÄR. SAMMA SAK I PARTICIPANTREPOSITORY.
 
 
                 var entity = new TeacherEntity
                 {
-                    Id = model.Id,
+                    //Id = model.Id, SE OVAN UTKOMMENTAR
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
