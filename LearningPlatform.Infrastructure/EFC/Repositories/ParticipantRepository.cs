@@ -52,7 +52,6 @@ public class ParticipantRepository(InfrastructureDbContext Context) : EfcReposit
 
 
     //UPDATE
-
     public override async Task UpdateAsync(ParticipantModel model, CancellationToken ct = default)
     {
         var entity = await Set.SingleOrDefaultAsync(x => x.Id == model.Id, ct)
@@ -64,6 +63,11 @@ public class ParticipantRepository(InfrastructureDbContext Context) : EfcReposit
         entity.LastName = model.LastName;
         entity.Email = model.Email.Trim();
         entity.PhoneNumber = model.PhoneNumber;
+        entity.UpdatedAt = DateTime.UtcNow;
+
+
+        entity.ParticipantId = model.ParticipantId;
+        entity.CourseSessionId = model.CourseSessionId;
         entity.UpdatedAt = DateTime.UtcNow;
     }
 
