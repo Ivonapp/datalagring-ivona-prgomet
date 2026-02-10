@@ -11,7 +11,7 @@ public interface IParticipantService
 
     // C - Create
     // Skapar en ny deltagare utifrån ParticipantInput
-    Task CreateAsync(ParticipantInput input, CancellationToken ct = default);
+    Task<int> CreateAsync(ParticipantInput input, CancellationToken ct = default);
 
     // R - Read (Hämta en)
     // Returnerar en ParticipantOutput om den finns

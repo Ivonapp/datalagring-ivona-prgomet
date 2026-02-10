@@ -40,7 +40,31 @@ using LearningPlatform.Application.Participants.PersistenceModels;
             DateTime.UtcNow,
             null
         );
-    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // DENNA KODEN HAR LAGTS TILL, PRECIS SOM I TEACHERMAPPER, FÖR DELEN SOM BERÖR IREADONLYLIST I PARTICIPANTSERVICE.
+    public static IReadOnlyList<ParticipantOutput> ToOutputList(IEnumerable<ParticipantModel> models)
+        => models.Select(ToOutput).ToList();
+
+
+
+
+
+}
 
 
 

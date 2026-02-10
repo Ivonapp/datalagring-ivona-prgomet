@@ -52,9 +52,6 @@ public async Task<int> CreateAsync(TeacherInput input, CancellationToken ct = de
 
 
 
-
-
-
     //             DELETE ASYNC
     public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
@@ -88,10 +85,12 @@ public async Task<int> CreateAsync(TeacherInput input, CancellationToken ct = de
         var existing = await teacher.GetByIdAsync(id, ct)
             ?? throw new ArgumentException($"Teacher with id {id} not found.");
 
+        var email = new Email(input.Email);
         var model = TeacherMapper.ToModel(input) with
         {
             Id = id,
-            Concurrency = existing.Concurrency
+            Concurrency = existing.Concurrency,
+            Email = email.Value
         };
 
         await teacher.UpdateAsync(model, ct);
