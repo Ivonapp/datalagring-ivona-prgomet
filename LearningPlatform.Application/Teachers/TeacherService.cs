@@ -1,11 +1,13 @@
 ﻿using LearningPlatform.Application.Abstractions.Persistence;
 using LearningPlatform.Application.Abstractions.Persistence.Repositories;
+using LearningPlatform.Application.Mappers;
 using LearningPlatform.Application.Services;
 using LearningPlatform.Application.Teachers.Inputs;
 using LearningPlatform.Application.Teachers.Outputs;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using LearningPlatform.Application.Teachers.PersistenceModels;
+using LearningPlatform.Domain.Entities.ValueObjects;
+
+
 
 namespace LearningPlatform.Application.Teachers;
 
@@ -15,28 +17,83 @@ public sealed class TeacherService
     IUnitOfWork uow
     ) : ITeacherService
 {
-    public Task CreateAsync(TeacherInput input, CancellationToken ct = default)
+    //              CREATE ASYNC //SE VALUEOBJECTS MAPPEN, den innehåller typ "Regex" för email och phone
+public async Task CreateAsync(TeacherInput input, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+
+        var email = new Email(input.Email);
+        var PhoneNumber = string.IsNullOrWhiteSpace(input.PhoneNumber)
+            ? null
+            : new PhoneNumber(input.PhoneNumber);
+
+        if (await teacher.EmailAlreadyExistsAsync(email.Value, ct))
+        {
+            throw new ArgumentException("Teacher with this email already exists.");
+        }
+
+        //Skrivit denna i samma ordning som i PersistenceModels (TeacherModel)
+        var teacherToCreate = new TeacherModel(
+                0,
+                input.FirstName,
+                input.LastName,
+                email.Value,
+                input.PhoneNumber,
+                input.Major,
+                Array.Empty<byte>(),
+                DateTime.UtcNow,
+                null
+            );
+
+        await teacher.AddAsync(teacherToCreate, ct);
+        await uow.SaveChangesAsync(ct);
     }
 
-    public Task DeleteAsync(int id, CancellationToken ct = default)
+
+
+
+
+
+    //             DELETE ASYNC
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var existing = await teacher.GetByIdAsync(id, ct)
+            ?? throw new ArgumentNullException("Teacher not found");
+
+        await teacher.UpdateAsync(existing, ct);
+        await teacher.DeleteAsync(id, ct);
+        await uow.SaveChangesAsync(ct);
     }
 
-    public Task<TeacherOutput?> GetByIdAsync(int id, CancellationToken ct = default)
+    //              GET BY ID ASYNC
+    public async Task<TeacherOutput?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var model = await teacher.GetByIdAsync(id, ct);
+        return model is null ? null : TeacherMapper.ToOutput(model);
     }
 
-    public Task<IReadOnlyList<TeacherOutput>> ListAsync(CancellationToken ct = default)
+
+    //                  IREADONLYLIST 
+    public async Task<IReadOnlyList<TeacherOutput>> ListAsync(CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var models = await teacher.ListAsync(ct);
+        return TeacherMapper.ToOutputList(models);
     }
 
-    public Task UpdateAsync(int id, TeacherInput input, CancellationToken ct = default)
+
+    //                  UPDATEASYNC
+    public async Task UpdateAsync(int id, TeacherInput input, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var existing = await teacher.GetByIdAsync(id, ct)
+            ?? throw new ArgumentException($"Teacher with id {id} not found.");
+
+        var model = TeacherMapper.ToModel(input) with
+        {
+            Id = id,
+            Concurrency = existing.Concurrency
+        };
+
+        await teacher.UpdateAsync(model, ct);
+        await uow.SaveChangesAsync(ct);
     }
+
 }

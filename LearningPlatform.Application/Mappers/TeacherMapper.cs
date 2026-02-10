@@ -39,7 +39,27 @@ using LearningPlatform.Application.Teachers.PersistenceModels;
                     DateTime.UtcNow,
                     null
                 );
-        }
+
+
+
+
+            // FICK HJÄLP AV CHATGPT MED DENNA
+            // Denna biten är specifikt för TeacherService.cs under IREADONLYLIST
+            // Jag kunde antingen använda mig av Linq eller lägga till kod i Mappern.
+            public static IReadOnlyList<TeacherOutput> ToOutputList(IEnumerable<TeacherModel> models)
+                        => models.Select(ToOutput).ToList();
+
+
+
+
+
+
+
+
+
+
+
+}
 
 
 
