@@ -1,11 +1,13 @@
 ﻿using LearningPlatform.Application.Courses.Inputs;
 using LearningPlatform.Application.Courses.Outputs;
 using LearningPlatform.Application.Courses.PersistenceModels;
+using LearningPlatform.Application.CourseSessions.Outputs;
+using LearningPlatform.Application.CourseSessions.PersistenceModels;
 
 
 
-        //                 NY KOD
-        //                 Entity <-> Model
+//                 NY KOD
+//                 Entity <-> Model
 
         namespace LearningPlatform.Application.Mappers;
 
@@ -38,7 +40,18 @@ using LearningPlatform.Application.Courses.PersistenceModels;
                 DateTime.UtcNow,
                 null
             );
-        }
+
+
+
+
+    public static IReadOnlyList<CourseOutput> ToOutputList(IEnumerable<CourseModel> models) //ALREADY ADDED SO I DON'T HAVE TO LATER.
+                => models.Select(ToOutput).ToList();
+
+
+
+
+
+}
 
 
 

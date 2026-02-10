@@ -1,6 +1,8 @@
 ﻿using LearningPlatform.Application.CourseSessions.Inputs;
 using LearningPlatform.Application.CourseSessions.Outputs;
 using LearningPlatform.Application.CourseSessions.PersistenceModels;
+using LearningPlatform.Application.Enrollments.Outputs;
+using LearningPlatform.Application.Enrollments.PersistenceModels;
 
 
 //                 NY KOD
@@ -39,6 +41,12 @@ public class CourseSessionMapper
         DateTime.UtcNow,          // 6: CreatedAt
         null
     );
+
+
+
+    public static IReadOnlyList<CourseSessionOutput> ToOutputList(IEnumerable<CourseSessionModel> models) //ALREADY ADDED SO I DON'T HAVE TO LATER.
+                    => models.Select(ToOutput).ToList();
+
 }
 
 

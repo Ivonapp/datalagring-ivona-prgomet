@@ -9,7 +9,7 @@ namespace LearningPlatform.Application.Services;
 public interface ICourseService
 {
     // C - Create
-    Task CreateAsync(CourseInput input, CancellationToken ct = default);
+    Task<int> CreateAsync(CourseInput input, CancellationToken ct = default);
 
     // R - Read (Hämta en)
     Task<CourseOutput?> GetByIdAsync(int id, CancellationToken ct = default);

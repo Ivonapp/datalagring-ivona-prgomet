@@ -2,7 +2,11 @@
 using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.CourseSessions.Inputs;
 using LearningPlatform.Application.CourseSessions.Outputs;
+using LearningPlatform.Application.CourseSessions.PersistenceModels;
+using LearningPlatform.Application.Mappers;
 using LearningPlatform.Application.Services;
+using LearningPlatform.Domain.Entities;
+using LearningPlatform.Domain.Entities.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,28 +19,73 @@ public sealed class CourseSessionService
     IUnitOfWork uow
     ) : ICourseSessionService
 {
-    public Task CreateAsync(CourseSessionInput input, CancellationToken ct = default)
+
+
+
+    // CREATE
+    public async Task<int> CreateAsync(CourseSessionInput input, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+
+        var sessionToCreate = new CourseSessionModel(
+            0,
+            input.CourseId,
+            Array.Empty<byte>(),
+            input.StartDate,
+            input.EndDate,
+            DateTime.UtcNow,
+            null
+        );
+
+        await courseSession.AddAsync(sessionToCreate, ct);
+        await uow.SaveChangesAsync(ct);
+
+        return sessionToCreate.Id;
     }
 
-    public Task DeleteAsync(int id, CancellationToken ct = default)
+    // DELETE
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var existing = await courseSession.GetByIdAsync(id, ct)
+            ?? throw new ArgumentException($"CourseSession {id} not found.");
+
+        await courseSession.UpdateAsync(existing, ct);
+        await courseSession.DeleteAsync(id, ct);
+        await uow.SaveChangesAsync(ct);
     }
 
-    public Task<CourseSessionOutput?> GetByIdAsync(int id, CancellationToken ct = default)
+
+    // GET BY ID
+    public async Task<CourseSessionOutput?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var model = await courseSession.GetByIdAsync(id, ct);
+        return model is null ? null : CourseSessionMapper.ToOutput(model);
     }
 
-    public Task<IReadOnlyList<CourseSessionOutput>> ListAsync(CancellationToken ct = default)
+
+    // LIST
+    public async Task<IReadOnlyList<CourseSessionOutput>> ListAsync(CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var models = await courseSession.ListAsync(ct);
+        return CourseSessionMapper.ToOutputList(models);
     }
 
-    public Task UpdateAsync(int id, CourseSessionInput input, CancellationToken ct = default)
+
+    // UPDATE
+    public async Task UpdateAsync(int id, CourseSessionInput input, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var existing = await courseSession.GetByIdAsync(id, ct)
+            ?? throw new ArgumentException($"CourseSession {id} not found.");
+
+
+        var model = CourseSessionMapper.ToModel(input) with
+        {
+            Id = id,
+            Concurrency = existing.Concurrency,
+            UpdatedAt = DateTime.UtcNow
+        };
+
+        await courseSession.UpdateAsync(model, ct);
+        await uow.SaveChangesAsync(ct);
+
     }
 }
