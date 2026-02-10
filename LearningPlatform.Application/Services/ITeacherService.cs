@@ -16,7 +16,7 @@ public interface ITeacherService
 
     // C
     // TeacherInput
-    Task CreateAsync(TeacherInput input, CancellationToken ct = default);
+    Task<int> CreateAsync(TeacherInput input, CancellationToken ct = default);
 
     // R (Hämta EN)
     // TeacherOutput

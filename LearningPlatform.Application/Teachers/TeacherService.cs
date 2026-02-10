@@ -18,7 +18,8 @@ public sealed class TeacherService
     ) : ITeacherService
 {
     //              CREATE ASYNC //SE VALUEOBJECTS MAPPEN, den innehåller typ "Regex" för email och phone
-public async Task CreateAsync(TeacherInput input, CancellationToken ct = default)
+public async Task<int> CreateAsync(TeacherInput input, CancellationToken ct = default)
+            
     {
 
         var email = new Email(input.Email);
@@ -46,6 +47,7 @@ public async Task CreateAsync(TeacherInput input, CancellationToken ct = default
 
         await teacher.AddAsync(teacherToCreate, ct);
         await uow.SaveChangesAsync(ct);
+        return teacherToCreate.Id;
     }
 
 
