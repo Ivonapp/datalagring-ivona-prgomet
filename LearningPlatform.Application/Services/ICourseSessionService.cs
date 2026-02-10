@@ -24,16 +24,3 @@ public interface ICourseSessionService
     Task DeleteAsync(int id, CancellationToken ct = default);
 }
 
-
-
-/*
-    Task CreateAsync(ParticipantInput input, CancellationToken ct = default);
-
-    Task<ParticipantOutput?> GetByIdAsync(int id, CancellationToken ct = default);
-
-    Task<IReadOnlyList<ParticipantOutput>> ListAsync(CancellationToken ct = default);
-
-    Task UpdateAsync(int id, ParticipantInput input, CancellationToken ct = default);
-
-    Task DeleteAsync(int id, CancellationToken ct = default);
-*/
