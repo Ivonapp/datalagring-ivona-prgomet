@@ -4,7 +4,21 @@ using System.Text;
 
 namespace LearningPlatform.Application.Participants.Outputs;
 
-public class ParticipantOutput
+
+// NYA RECORD
+public sealed record ParticipantOutput(
+    int Id,
+    string FirstName,
+    string LastName,
+    string Email,
+    string PhoneNumber,
+    DateTime CreatedAt
+);
+
+
+
+// GAMLA KLASSEN NEDAN
+/*public class ParticipantOutput
 {
     public int Id { get; set; }
     public string FirstName { get; set; } = null!;
@@ -12,4 +26,4 @@ public class ParticipantOutput
     public string Email { get; set; } = null!;
     public string PhoneNumber { get; set; } = null!;
     public DateTime CreatedAt { get; set; }
-}
+}*/
