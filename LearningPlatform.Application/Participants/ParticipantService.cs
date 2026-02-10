@@ -20,34 +20,20 @@ public sealed class ParticipantService
         throw new NotImplementedException();
     }
 
-
-
-
     public Task DeleteAsync(int id, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
-
-
-
-
 
     public Task<ParticipantOutput?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
 
-
-
-
     public Task<IReadOnlyList<ParticipantOutput>> ListAsync(CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
-
-
-
-
 
     public Task UpdateAsync(int id, ParticipantInput input, CancellationToken ct = default)
     {

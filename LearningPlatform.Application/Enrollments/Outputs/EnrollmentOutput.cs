@@ -6,15 +6,28 @@ namespace LearningPlatform.Application.Enrollments.Outputs;
 
 
 
+// NY RECORD OVAN
 
-//              OUTPUT = DET SOM SKICKAS UT TILL ANVÄNDAREN/SYSTEMET
-//              JAG KOPIERAR FÖRST ALLA PROPERTIES FRÅN ENROLLMENT ENTITIES, OCH FÖRDELAR SEN PROPERTIES MELLAN INPUT OCH OUTPUT
+public sealed record EnrollmentOutput(
+    int Id,
+    DateTime EnrollmentDate,
+    DateTime? UpdatedAt,
+    int ParticipantId,
+    int CourseSessionId
 
-public class EnrollmentOutput
+    );
+
+
+
+
+
+
+// GAMMAL KLASS NEDAN
+/*public class EnrollmentOutput
 {
     public int Id { get; set; }
     public DateTime EnrollmentDate { get; set; }
     public DateTime? UpdatedAt { get; set; }
     public int ParticipantId { get; set; }
     public int CourseSessionId { get; set; }
-}
+}*/
