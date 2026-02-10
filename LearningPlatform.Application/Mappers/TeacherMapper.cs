@@ -15,16 +15,15 @@ using LearningPlatform.Application.Teachers.PersistenceModels;
 
 
             //                  OUTPUTS
-                public static TeacherOutput ToOutput(TeacherModel model) => new()
-                {
-                    Id = model.Id,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    PhoneNumber = model.PhoneNumber,
-                    Major = model.Major,
-                    CreatedAt = model.CreatedAt
-                };
+                public static TeacherOutput ToOutput(TeacherModel model) => new(
+                   model.Id,
+                   model.FirstName,
+                   model.LastName,
+                   model.Email,
+                   model.PhoneNumber,
+                   model.Major,
+                   model.CreatedAt
+                );
 
 
             //                  NEDAN FICK HJÄLP AV CHATGPT

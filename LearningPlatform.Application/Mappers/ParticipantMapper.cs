@@ -13,31 +13,34 @@ using LearningPlatform.Application.Participants.PersistenceModels;
     {
 
         //                  OUTPUTS
-        public static ParticipantOutput ToOutput(ParticipantModel model) => new()
-        {
-            Id = model.Id,
-            FirstName = model.FirstName,
-            LastName = model.LastName,
-            Email = model.Email,
-            PhoneNumber = model.PhoneNumber,
-            CreatedAt = model.CreatedAt
-        };
+        public static ParticipantOutput ToOutput(ParticipantModel model) => new(
+            model.Id,
+            model.FirstName,
+            model.LastName,
+            model.Email,
+            model.PhoneNumber,
+            model.CreatedAt
+        );
 
 
-        //                  NEDAN FICK HJÄLP AV CHATGPT
-        //                  ParticipantInput
-
-        //(DET ANVÄNDAREN SKRIVER IN! CreatedAt behövs alltså inte då ju användaren inte skriver in dagens datum te.x.)
+        //        INPUTS
+        //        FICK HJÄLP AV CHATGPT NEDAN - fick hjälp av chatgpt med att förstå hur denna delen skulle "se ut" samt förklaring på var och en av raderna.
+        //                  
+        //        Update: Har nu fixat och ändrat rätt mycket i min tidigare kod. Koden nedan skrevs först när jag höll på med mina repos,
+        //        Och när jag sen började bygga på Service så behövdes det göra ändringar av denna koden.
+        //        Jag har rättat till denna delen nedan (utan chatgpt) och förstått upplägget. (Följ klasserna för entity för RÄTT ORDNING på dom olika raderna.)
+        //        Jag hade råkat missa att skriva en [] för concurrency och null på slutet, vilket gav mig röda squigglys. Detta är nu fixat.
         public static ParticipantModel ToModel(ParticipantInput input) => new(
             0,
+            [],
             input.FirstName,
             input.LastName,
             input.Email,
             input.PhoneNumber,
-            DateTime.UtcNow
+            DateTime.UtcNow,
+            null
         );
     }
-
 
 
 

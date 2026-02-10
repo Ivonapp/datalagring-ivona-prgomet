@@ -12,15 +12,15 @@ public class CourseSessionMapper
 {
 
     //                  OUTPUTS
-    public static CourseSessionOutput ToOutput(CourseSessionModel model) => new()
-    {
-        Id = model.Id,
-        CourseId = model.CourseId,
-        StartDate = model.StartDate,
-        EndDate = model.EndDate,
-        CreatedAt = model.CreatedAt,
-        UpdatedAt = model.UpdatedAt
-    };
+    public static CourseSessionOutput ToOutput(CourseSessionModel model) => new(
+       model.Id,
+       model.CourseId,
+       model.StartDate,
+       model.EndDate,
+       model.CreatedAt,
+       model.UpdatedAt
+    );
+
 
 
     //                  INPUTS - CourseSessionInput

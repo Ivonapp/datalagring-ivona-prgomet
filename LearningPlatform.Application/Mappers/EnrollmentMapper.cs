@@ -12,14 +12,13 @@ using LearningPlatform.Application.Enrollments.PersistenceModels;
             {
 
                 //                  OUTPUTS
-                public static EnrollmentOutput ToOutput(EnrollmentModel model) => new()
-                {
-                    Id = model.Id,
-                    EnrollmentDate = model.EnrollmentDate,
-                    UpdatedAt = model.UpdatedAt,
-                    ParticipantId = model.ParticipantId,
-                    CourseSessionId = model.CourseSessionId
-                };
+                public static EnrollmentOutput ToOutput(EnrollmentModel model) => new(
+                    model.Id,
+                    model.EnrollmentDate,
+                    model.UpdatedAt,
+                    model.ParticipantId,
+                    model.CourseSessionId
+                );
 
 
                 //                  INPUTS - EnrollmentInput

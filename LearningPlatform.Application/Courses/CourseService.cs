@@ -12,7 +12,7 @@ namespace LearningPlatform.Application.Courses;
 public sealed class CourseService
     (
     ICourseRepository course,
-    IUnitOfWork uow
+    IUnitOfWork uowÖ
     ) : ICourseService
 
 {

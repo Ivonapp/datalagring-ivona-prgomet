@@ -17,20 +17,5 @@ namespace LearningPlatform.Application.Courses.Outputs
         DateTime CreatedAt
 
         );
-
-
 }
-
-    // GAMMAL KLASS
-    /*public class CourseOutput
-    {
-        public int Id { get; set; }
-        public int CourseCode { get; set; }
-        public byte[] Concurrency { get; set; } = null!;
-        public string Title { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
-    } */
-
    
