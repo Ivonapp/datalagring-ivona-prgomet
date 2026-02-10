@@ -2,7 +2,11 @@
 using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Enrollments.Inputs;
 using LearningPlatform.Application.Enrollments.Outputs;
+using LearningPlatform.Application.Enrollments.PersistenceModels;
+using LearningPlatform.Application.Mappers;
 using LearningPlatform.Application.Services;
+using LearningPlatform.Domain.Entities;
+using LearningPlatform.Domain.Entities.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,28 +20,77 @@ public sealed class EnrollmentService
     ) : IEnrollmentService
 
 {
-    public Task CreateAsync(EnrollmentInput input, CancellationToken ct = default)
+
+
+
+    // CREATE
+    public async Task<int> CreateAsync(EnrollmentInput input, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+
+        //Osäker på om jag eventuellt ska lägga in något här angående kurs som söks (?) lämnar tomt for now.
+
+
+    var enrollmentToCreate = new EnrollmentModel(
+            0,
+            Array.Empty<byte>(),
+            DateTime.UtcNow,
+            null,
+            input.ParticipantId,
+            input.CourseSessionId
+        );
+
+        await enrollment.AddAsync(enrollmentToCreate, ct);
+        await uow.SaveChangesAsync(ct);
+
+        return enrollmentToCreate.Id;
     }
 
-    public Task DeleteAsync(int id, CancellationToken ct = default)
+
+    // DELETE
+    public async Task DeleteAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var existing = await enrollment.GetByIdAsync(id, ct)
+            ?? throw new ArgumentException("Enrollment not found");
+
+        await enrollment.UpdateAsync(existing, ct);
+        await enrollment.DeleteAsync(id, ct);
+        await uow.SaveChangesAsync(ct);
     }
 
-    public Task<EnrollmentOutput?> GetByIdAsync(int id, CancellationToken ct = default)
+
+    // GET BY ID
+    public async Task<EnrollmentOutput?> GetByIdAsync(int id, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var model = await enrollment.GetByIdAsync(id, ct);
+        return model is null ? null : EnrollmentMapper.ToOutput(model);
     }
 
-    public Task<IReadOnlyList<EnrollmentOutput>> ListAsync(CancellationToken ct = default)
+
+
+
+    //              IREADONLYLIST
+    public async Task<IReadOnlyList<EnrollmentOutput>> ListAsync(CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var models = await enrollment.ListAsync(ct);
+        return EnrollmentMapper.ToOutputList(models); // LÄG TILL I MAPPER SOM MED DOM ANDRA
     }
 
-    public Task UpdateAsync(int id, EnrollmentInput input, CancellationToken ct = default)
+
+
+    //              UPDATE
+public async Task UpdateAsync(int id, EnrollmentInput input, CancellationToken ct = default)
     {
-        throw new NotImplementedException();
+        var existing = await enrollment.GetByIdAsync(id, ct)
+            ?? throw new ArgumentException($"Enrollment {id} not found.");
+
+        var model = EnrollmentMapper.ToModel(input) with
+        {
+            Id = id,
+            Concurrency = existing.Concurrency,
+            UpdatedAt = DateTime.UtcNow 
+        };
+
+        await enrollment.UpdateAsync(model, ct);
+        await uow.SaveChangesAsync(ct);
     }
 }

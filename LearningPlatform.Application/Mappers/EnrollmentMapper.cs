@@ -1,6 +1,8 @@
 ﻿using LearningPlatform.Application.Enrollments.Inputs;
 using LearningPlatform.Application.Enrollments.Outputs;
 using LearningPlatform.Application.Enrollments.PersistenceModels;
+using LearningPlatform.Application.Teachers.Outputs;
+using LearningPlatform.Application.Teachers.PersistenceModels;
 
 
 //                 NY KOD
@@ -35,7 +37,17 @@ using LearningPlatform.Application.Enrollments.PersistenceModels;
                         input.ParticipantId,    // 5: Hämtas från Input.
                         input.CourseSessionId   // 6: Hämtas från Input.
                 );
-            }
+
+
+
+
+
+
+            public static IReadOnlyList<EnrollmentOutput> ToOutputList(IEnumerable<EnrollmentModel> models)
+                    => models.Select(ToOutput).ToList();
+
+
+}
 
 
 
