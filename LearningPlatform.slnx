@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="LearningPlatform.API/LearningPlatform.API.csproj" Id="e3e0ff65-7253-4178-8595-7e62c651eb0b" />
   <Project Path="LearningPlatform.Application/LearningPlatform.Application.csproj" />
   <Project Path="LearningPlatform.Domain/LearningPlatform.Domain.csproj" />
   <Project Path="LearningPlatform.Infrastructure/LearningPlatform.Infrastructure.csproj" />
