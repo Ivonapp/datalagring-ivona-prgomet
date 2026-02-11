@@ -6,7 +6,6 @@ using LearningPlatform.Application.CourseSessions.PersistenceModels;
 using LearningPlatform.Application.Mappers;
 using LearningPlatform.Application.Services;
 using LearningPlatform.Domain.Entities;
-using LearningPlatform.Domain.Entities.ValueObjects;
 using System;
 using System.Collections.Generic;
 using System.Text;
