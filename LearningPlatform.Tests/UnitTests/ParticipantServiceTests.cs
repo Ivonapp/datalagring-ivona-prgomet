@@ -37,7 +37,7 @@ public class ParticipantServiceTests
         );
 
         // ACT
-        await service.CreateAsync(input);                                                               // 
+        await service.CreateAsync(input); 
 
         // ASSERT
         mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);      // CHATGPT - denna raden var med hjälp av chatGPT" Raden VARIFIERAR att systemet faktiskt sparar
@@ -55,9 +55,9 @@ public class ParticipantServiceTests
     {
 
         // ARRANGE
-        var mockRepo = new Mock<IParticipantRepository>();                                      // Skapar en fake (mock) repository                    
-        var mockUow = new Mock<IUnitOfWork>();                                                  // Skapar en fake (mock) UnitOfWork  
-        var service = new ParticipantService(mockRepo.Object, mockUow.Object);                  // Skapar service och injicerar mockRepo och mockUow istället för riktiga beroenden
+        var mockParticipantRepository = new Mock<IParticipantRepository>();                                         // Skapar en fake (mock) repository                    
+        var mockUnitOfWork = new Mock<IUnitOfWork>();                                                               // Skapar en fake (mock) UnitOfWork  
+        var service = new ParticipantService(mockParticipantRepository.Object, mockUnitOfWork.Object);              // Skapar service och injicerar mockRepo och mockUow istället för riktiga beroenden
 
         var fakeParticipantModel = new ParticipantModel(                                        // Skapar en fake lärare (testdata)
             1,
@@ -70,14 +70,14 @@ public class ParticipantServiceTests
             null
         );
 
-        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                   // Fick hjälp av ChatGpt för denna delen då jag inte fick rätt på det. 
-                .ReturnsAsync(fakeParticipantModel);                                            // Returnera "fakeTeacherModel" när GetByIdAsync anropas
+        mockParticipantRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                  // Fick hjälp av ChatGpt för denna delen då jag inte fick rätt på det. 
+        .ReturnsAsync(fakeParticipantModel);                                                                    // Returnera "fakeTeacherModel" när GetByIdAsync anropas
 
         // ACT
-        var result = await service.GetByIdAsync(1);                                             // Anropar metoden vi vill testa
+        var result = await service.GetByIdAsync(1);                                                             // Anropar metoden vi vill testa
 
         // ASSERT
-        Assert.NotNull(result);                                                                 // Kontrollerar att resultatet inte är null (dvs att en lärare hittdes)
+        Assert.NotNull(result);                                                                                 // Kontrollerar att resultatet inte är null (dvs att en lärare hittdes)
     }
 
 
@@ -93,9 +93,9 @@ public class ParticipantServiceTests
     public async Task Update_ShouldUpdateParticipant()
     {
         // ARRANGE
-        var mockRepo = new Mock<IParticipantRepository>();
+        var mockParticipantRepository = new Mock<IParticipantRepository>();
         var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new ParticipantService(mockRepo.Object, mockUnitOfWork.Object);
+        var service = new ParticipantService(mockParticipantRepository.Object, mockUnitOfWork.Object);
 
         var existingParticipant = new ParticipantModel(
             1,
@@ -108,7 +108,7 @@ public class ParticipantServiceTests
             null
         );
 
-        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                               // Vi "ställer upp" så att läraren hittas först. SIffran 1 är ID för den läraren som ska ändras
+        mockParticipantRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))              // Vi "ställer upp" så att läraren hittas först. SIffran 1 är ID för den läraren som ska ändras
             .ReturnsAsync(existingParticipant);
 
         // ACT
@@ -119,24 +119,29 @@ public class ParticipantServiceTests
             "07658236"));
 
         // ASSERT
-        mockRepo.Verify(r => r.UpdateAsync(It.IsAny<ParticipantModel>()), Times.Once);                      // Verifierar att Update-metoden i repot anropades
+        mockParticipantRepository.Verify(r => r.UpdateAsync(It.IsAny<ParticipantModel>()), Times.Once);     // Verifierar att Update-metoden i repot anropades
         mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);          // Verifierar att spara-knappen trycktes
         }
 
 
 
+
+
+
+
+
      
-             //                                          DELETE - Testar att deltagare/participant tas bort från systemet  
+        //                                          DELETE - Testar att deltagare/participant tas bort från systemet  
         [Fact]
         public async Task Delete_ShouldRemoveTeacher_WhenParticipantExists()
         {
 
         // ARRANGE
-        var mockRepo = new Mock<IParticipantRepository>();
+        var mockParticipantRepository = new Mock<IParticipantRepository>();
         var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new ParticipantService(mockRepo.Object, mockUnitOfWork.Object);
+        var service = new ParticipantService(mockParticipantRepository.Object, mockUnitOfWork.Object);
         
-        var existingParticipant = new ParticipantModel(                                                 // Skapa en lärare som ska föreställa den som ska tas bort
+        var existingParticipant = new ParticipantModel(                                                         // Skapa en lärare som ska föreställa den som ska tas bort
             1,
             [],
             "FirstName",
@@ -146,16 +151,16 @@ public class ParticipantServiceTests
             DateTime.UtcNow,
             null
         );
-        
-        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                           // Berätta för mocken att läraren med ID 1 (som ska raderas) FINNS i databasen,
-                .ReturnsAsync(existingParticipant);                                                         // för innan vi kan radera, måste vi säkerställa att läraren faktiskt finns
+
+        mockParticipantRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                  // Berätta för mocken att läraren med ID 1 (som ska raderas) FINNS i databasen,
+                .ReturnsAsync(existingParticipant);                                                             // för innan vi kan radera, måste vi säkerställa att läraren faktiskt finns
 
         // ACT
-        await service.DeleteAsync(1);                                                                   // Raderar läraren med ID 1
+        await service.DeleteAsync(1);                                                                           // Raderar läraren med ID 1
 
         // ASSERT
-        mockRepo.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);              // Kontrollera att DeleteAsync anropades
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);      // Kontrollera att ändringarna sparades
+        mockParticipantRepository.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);     // Kontrollera att DeleteAsync anropades
+        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);              // Kontrollera att ändringarna sparades
     }
 }
 

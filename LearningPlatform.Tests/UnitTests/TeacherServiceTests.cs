@@ -58,9 +58,9 @@ public class TeacherServiceTests
     {
 
         // ARRANGE
-        var mockRepo = new Mock<ITeacherRepository>();                                          // Skapar en fake (mock) repository                    
-        var mockUow = new Mock<IUnitOfWork>();                                                  // Skapar en fake (mock) UnitOfWork  
-        var service = new TeacherService(mockRepo.Object, mockUow.Object);                      // Skapar service och injicerar mockRepo och mockUow istället för riktiga beroenden
+        var mockTeacherRepository = new Mock<ITeacherRepository>();                                          // Skapar en fake (mock) repository                    
+        var mockUnitOfWork = new Mock<IUnitOfWork>();                                                  // Skapar en fake (mock) UnitOfWork  
+        var service = new TeacherService(mockTeacherRepository.Object, mockUnitOfWork.Object);                      // Skapar service och injicerar mockRepo och mockUow istället för riktiga beroenden
 
         var fakeTeacherModel = new TeacherModel(                                                // Skapar en fake lärare (testdata)
             1,
@@ -74,7 +74,7 @@ public class TeacherServiceTests
             null
         );
 
-        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                   // Fick hjälp av ChatGpt för denna delen då jag inte fick rätt på det. 
+        mockTeacherRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                   // Fick hjälp av ChatGpt för denna delen då jag inte fick rätt på det. 
                 .ReturnsAsync(fakeTeacherModel);                                                // Returnera "fakeTeacherModel" när GetByIdAsync anropas
 
         // ACT
@@ -98,9 +98,9 @@ public class TeacherServiceTests
     public async Task Update_ShouldUpdateTeacher()
     {
         // ARRANGE
-        var mockRepo = new Mock<ITeacherRepository>();
+        var mockTeacherRepository = new Mock<ITeacherRepository>();
         var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new TeacherService(mockRepo.Object, mockUnitOfWork.Object);
+        var service = new TeacherService(mockTeacherRepository.Object, mockUnitOfWork.Object);
 
         var existingTeacher = new TeacherModel(
             1,
@@ -114,7 +114,7 @@ public class TeacherServiceTests
             null
         );
 
-        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                               // Vi "ställer upp" så att läraren hittas först. SIffran 1 är ID för den läraren som ska ändras
+        mockTeacherRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                               // Vi "ställer upp" så att läraren hittas först. SIffran 1 är ID för den läraren som ska ändras
             .ReturnsAsync(existingTeacher);
 
         // ACT
@@ -126,7 +126,7 @@ public class TeacherServiceTests
             "Math"));
 
         // ASSERT
-        mockRepo.Verify(r => r.UpdateAsync(It.IsAny<TeacherModel>()), Times.Once);                          // Verifierar att Update-metoden i repot anropades
+        mockTeacherRepository.Verify(r => r.UpdateAsync(It.IsAny<TeacherModel>()), Times.Once);                          // Verifierar att Update-metoden i repot anropades
         mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);          // Verifierar att spara-knappen trycktes
     }
 
@@ -144,9 +144,9 @@ public class TeacherServiceTests
         {
 
         // ARRANGE
-        var mockRepo = new Mock<ITeacherRepository>();
+        var mockTeacherRepository = new Mock<ITeacherRepository>();
         var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new TeacherService(mockRepo.Object, mockUnitOfWork.Object);
+        var service = new TeacherService(mockTeacherRepository.Object, mockUnitOfWork.Object);
         
         var existingTeacher = new TeacherModel(                                                         // Skapa en lärare som ska föreställa den som ska tas bort
             1,
@@ -159,15 +159,15 @@ public class TeacherServiceTests
             DateTime.UtcNow,
             null
         );
-        
-        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                           // Berätta för mocken att läraren med ID 1 (som ska raderas) FINNS i databasen,
+
+        mockTeacherRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                           // Berätta för mocken att läraren med ID 1 (som ska raderas) FINNS i databasen,
                 .ReturnsAsync(existingTeacher);                                                         // för innan vi kan radera, måste vi säkerställa att läraren faktiskt finns
 
         // ACT
         await service.DeleteAsync(1);                                                                   // Raderar läraren med ID 1
 
         // ASSERT
-        mockRepo.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);              // Kontrollera att DeleteAsync anropades
+        mockTeacherRepository.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);              // Kontrollera att DeleteAsync anropades
         mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);      // Kontrollera att ändringarna sparades
     }
 }
