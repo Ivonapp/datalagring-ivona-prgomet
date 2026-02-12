@@ -2,6 +2,8 @@
 using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Teachers;
 using LearningPlatform.Application.Teachers.Inputs;
+using LearningPlatform.Application.Teachers.Outputs;
+using LearningPlatform.Application.Teachers.PersistenceModels;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ public class TeacherServiceTests
 
 
 
-    // CREATE - undersöker så "spara-knappen" trycks
+    //                                         CREATE - undersöker så "spara-knappen" trycks
     [Fact]
     public async Task Create_Saves_To_Database()
     {
@@ -41,5 +43,44 @@ public class TeacherServiceTests
 
         // ASSERT
         mockUnitOfWork.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);      // CHATGPT - denna raden var med hjälp av chatGPT" Raden VARIFIERAR att systemet faktiskt sparar
+    }
+
+
+
+
+
+
+
+
+    //                                          READ - TestAR att en lärare hittas i databasen VIA ID (GetByIdAsync)
+    [Fact]
+    public async Task GetById_ReturnsTeacher_WhenExists()
+    {
+
+        // ARRANGE
+        var mockRepo = new Mock<ITeacherRepository>();                                          // Skapar en fake (mock) repository                    
+        var mockUow = new Mock<IUnitOfWork>();                                                  // Skapar en fake (mock) UnitOfWork  
+        var service = new TeacherService(mockRepo.Object, mockUow.Object);                      // Skapar service och injicerar mockRepo och mockUow istället för riktiga beroenden
+
+        var fakeTeacherModel = new TeacherModel(                                                // Skapar en fake lärare (testdata)
+            1,
+            "",                                                                                 // Fyllde inte i Firstname, LastName, Email eyc eftersom vi ENDAST söker på ID.
+            "",                                                                                 // Ville därav göra det tydligare och fila bort all onödig info. 
+            "",
+            "",
+            "",
+            [],
+            DateTime.UtcNow,
+            null
+        );
+
+        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                   // Fick hjälp av ChatGpt för denna delen då jag inte fick rätt på det. 
+                .ReturnsAsync(fakeTeacherModel);                                                // Returnera "fakeTeacherModel" när GetByIdAsync anropas
+
+        // ACT
+        var result = await service.GetByIdAsync(1);                                             // Anropar metoden vi vill testa
+
+        // ASSERT
+        Assert.NotNull(result);                                                                 // Kontrollerar att resultatet inte är null (dvs att en lärare hittdes)
     }
 }
