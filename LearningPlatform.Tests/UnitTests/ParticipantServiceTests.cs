@@ -122,7 +122,42 @@ public class ParticipantServiceTests
         mockRepo.Verify(r => r.UpdateAsync(It.IsAny<ParticipantModel>()), Times.Once);                      // Verifierar att Update-metoden i repot anropades
         mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);          // Verifierar att spara-knappen trycktes
         }
-    }
+
+
 
      
-    
+             //                                          DELETE - Testar att deltagare/participant tas bort från systemet  
+        [Fact]
+        public async Task Delete_ShouldRemoveTeacher_WhenParticipantExists()
+        {
+
+        // ARRANGE
+        var mockRepo = new Mock<IParticipantRepository>();
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+        var service = new ParticipantService(mockRepo.Object, mockUnitOfWork.Object);
+        
+        var existingParticipant = new ParticipantModel(                                                 // Skapa en lärare som ska föreställa den som ska tas bort
+            1,
+            [],
+            "FirstName",
+            "LastName",
+            "Email",
+            "PhoneNumber",
+            DateTime.UtcNow,
+            null
+        );
+        
+        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                           // Berätta för mocken att läraren med ID 1 (som ska raderas) FINNS i databasen,
+                .ReturnsAsync(existingParticipant);                                                         // för innan vi kan radera, måste vi säkerställa att läraren faktiskt finns
+
+        // ACT
+        await service.DeleteAsync(1);                                                                   // Raderar läraren med ID 1
+
+        // ASSERT
+        mockRepo.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);              // Kontrollera att DeleteAsync anropades
+        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);      // Kontrollera att ändringarna sparades
+    }
+}
+
+
+

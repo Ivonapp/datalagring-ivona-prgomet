@@ -52,7 +52,7 @@ public class TeacherServiceTests
 
 
 
-    //                                          READ - TestAR att en lärare hittas i databasen VIA ID (GetByIdAsync)
+    //                                              READ - TestAR att en lärare hittas i databasen VIA ID (GetByIdAsync)
     [Fact]
     public async Task GetById_ReturnsTeacher_WhenExists()
     {
@@ -93,7 +93,7 @@ public class TeacherServiceTests
 
 
 
-    //                                             UPDATE - Denna kod testar att en uppdatering av en lärare fungerar korrekt genom hela flödet
+    //                                             UPDATE - Testar att en uppdatering av en lärare fungerar
     [Fact]
     public async Task Update_ShouldUpdateTeacher()
     {
@@ -128,5 +128,46 @@ public class TeacherServiceTests
         // ASSERT
         mockRepo.Verify(r => r.UpdateAsync(It.IsAny<TeacherModel>()), Times.Once);                          // Verifierar att Update-metoden i repot anropades
         mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);          // Verifierar att spara-knappen trycktes
-        }
     }
+
+
+
+
+
+
+
+
+
+        //                                          DELETE - Testar att läraren tas bort från systemet  
+        [Fact]
+        public async Task Delete_ShouldRemoveTeacher_WhenTeacherExists()
+        {
+
+        // ARRANGE
+        var mockRepo = new Mock<ITeacherRepository>();
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+        var service = new TeacherService(mockRepo.Object, mockUnitOfWork.Object);
+        
+        var existingTeacher = new TeacherModel(                                                         // Skapa en lärare som ska föreställa den som ska tas bort
+            1,
+            "FirstName",
+            "LastName",
+            "Email",
+            "PhoneNumber",
+            "Major",
+            [],
+            DateTime.UtcNow,
+            null
+        );
+        
+        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                           // Berätta för mocken att läraren med ID 1 (som ska raderas) FINNS i databasen,
+                .ReturnsAsync(existingTeacher);                                                         // för innan vi kan radera, måste vi säkerställa att läraren faktiskt finns
+
+        // ACT
+        await service.DeleteAsync(1);                                                                   // Raderar läraren med ID 1
+
+        // ASSERT
+        mockRepo.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);              // Kontrollera att DeleteAsync anropades
+        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);      // Kontrollera att ändringarna sparades
+    }
+}
