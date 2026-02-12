@@ -31,11 +31,11 @@ public class TeacherServiceTests
         var service = new TeacherService(mockTeacherRepository.Object, mockUnitOfWork.Object);          // Lägger in Teacherrepo och unitofwork i variablen service (Dependency Injection)
 
         var input = new TeacherInput(                                                                   // "förbereder" test-datan
-         FirstName: "Namn",
-         LastName: "Efternamn",
-         Email: "test@test.org",
+         FirstName: "FirstName",
+         LastName: "LastName",
+         Email: "Email@test.se",
          PhoneNumber: "07674635",
-         Major: "Fysik"
+         Major: "Math"
         );
 
         // ACT
@@ -83,4 +83,50 @@ public class TeacherServiceTests
         // ASSERT
         Assert.NotNull(result);                                                                 // Kontrollerar att resultatet inte är null (dvs att en lärare hittdes)
     }
-}
+
+
+
+
+
+
+
+
+
+
+    //                                             UPDATE - Denna kod testar att en uppdatering av en lärare fungerar korrekt genom hela flödet
+    [Fact]
+    public async Task Update_ShouldUpdateTeacher()
+    {
+        // ARRANGE
+        var mockRepo = new Mock<ITeacherRepository>();
+        var mockUnitOfWork = new Mock<IUnitOfWork>();
+        var service = new TeacherService(mockRepo.Object, mockUnitOfWork.Object);
+
+        var existingTeacher = new TeacherModel(
+            1,
+            "FirstName",
+            "LastName",
+            "Email",
+            "Phone",
+            "Major",
+            [],
+            DateTime.UtcNow,
+            null
+        );
+
+        mockRepo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))                               // Vi "ställer upp" så att läraren hittas först. SIffran 1 är ID för den läraren som ska ändras
+            .ReturnsAsync(existingTeacher);
+
+        // ACT
+        await service.UpdateAsync(1, new TeacherInput(                                                      // är paketet med de nya uppgifterna (namn, mejl, etc.)                                                 
+            "NewName",                                                                                      // som ska skriva över dom gamla upgifterna
+            "NewLastName",
+            "Email@test.se",
+            "07658236",
+            "Math"));
+
+        // ASSERT
+        mockRepo.Verify(r => r.UpdateAsync(It.IsAny<TeacherModel>()), Times.Once);                          // Verifierar att Update-metoden i repot anropades
+        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);          // Verifierar att spara-knappen trycktes
+        }
+    }
