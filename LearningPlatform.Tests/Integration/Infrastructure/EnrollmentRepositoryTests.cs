@@ -9,11 +9,30 @@ using Xunit;
 namespace LearningPlatform.Tests.Integration.Infrastructure;
 
 [Collection(SqliteInMemoryCollection.Name)]
+
+/*                                          *** CHATGPT ***
+    
+    Jag använde chatgpt som hjälp/bollplank för ALLA klasserna i Integrations tester, men också som ett sätt
+    att kunna se och förstå HUR strukturen och koden i integrationstester ser ut i jämförelse med enhetstester. 
+    Det tog väldigt lång tid att skriva klart Integrationstesterna (tillskillnad från Enhetstesterna) då enhetsterter
+    är mycket enklare att förstå samt mycket enklare kod.
+    
+    När jag första gången hade skrivit klart alla integrationstester, och försökte köra testet, fick jag buggar och error
+    i alla klasser HELA tiden, och hur jag än gjorde, ändrade etc så fortsatte jag få buggar. Tillslut fick jag börja
+    om där jag fick radera alla integrationstester jag skrivit och startade om.
+    
+    ChatGPT hjälpte mig att SE strukturen och HUR integrationstester skrivs, byggs och bara all-in-all
+    hur man ska skriva dom olika delarna. Hur dom olika CRUD och AAA delarna ser ut, Hur man t.ex. ska göra med klasser
+    som har olika beroenden såsom Enrollment som har koppling till andra klasser.
+    
+    Även då denna delen var otroligt svår och jag fick börja om helt, så var det på ett sätt just omstarten som faktiskt
+    hjälpte mig att "nöta in" koden.
+    
+*/
+
+
 public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
 {
-
-
-
 
     //                                      CREATE
     [Fact]
