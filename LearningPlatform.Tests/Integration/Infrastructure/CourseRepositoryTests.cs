@@ -23,7 +23,7 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
 
         var model = new CourseModel(
             0,
-            101,
+            301,
             new byte[8],
             "CreateTitle",
             "CreateDescription",
@@ -36,9 +36,10 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
         await db.SaveChangesAsync();
 
         //                          Assert
-        var exists = await db.Courses.AnyAsync(x => x.CourseCode == 101);
+        var exists = await db.Courses.AnyAsync(x => x.CourseCode == 301);
         Assert.True(exists);
     }
+
 
 
 
@@ -52,7 +53,7 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
 
         var course = new CourseEntity { 
             Title = "ReadTitle",
-            CourseCode = 200,
+            CourseCode = 302,
             Description = "ReadDescription",
             Concurrency = new byte[8] 
         };
@@ -65,7 +66,7 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
 
         //                          Assert
         Assert.NotNull(result);
-        Assert.Equal(200, result!.CourseCode);
+        Assert.Equal(302, result!.CourseCode);
     }
 
 
@@ -82,8 +83,8 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
 
         var course = new CourseEntity {
             Title = "OldTitle",
-            CourseCode = 300,
-            Description = "UpdateDescription",
+            CourseCode = 303,
+            Description = "Description",
             Concurrency = new byte[8]
         };
 
@@ -114,7 +115,7 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
 
         var course = new CourseEntity {
             Title = "DeleteTitle",
-            CourseCode = 400,
+            CourseCode = 304,
             Description = "DeleteDescription",
             Concurrency = new byte[8]
         };

@@ -12,12 +12,15 @@ namespace LearningPlatform.Tests.Integration.Infrastructure;
 public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
 {
 
-    [Fact]
+
+
 
     //                                      CREATE
+    [Fact]
+
+    
     public async Task Add_ShouldWork()
     {
-
         //                          Arrange
         await using var db = fixture.CreatedDbContext();
         var repo = new EnrollmentRepository(db);
@@ -26,36 +29,36 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
 
 
         var course = new CourseEntity {                         // COURSE
-            Title = "Add", 
-            CourseCode = 1, 
+            Title = "AddTitle", 
+            CourseCode = 101, 
             Concurrency = new byte[8] 
         };
 
         db.Courses.Add(course);                                 // COURSESESSION
         var session = new CourseSessionEntity { 
-            Course = course, 
+            Course = course,                                    // ??
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(1), 
             Concurrency = new byte[8] 
         };
 
         db.CourseSessions.Add(session);                         // PARTICIPANT
-        var part = new ParticipantEntity { 
-            FirstName = "A", 
-            LastName = "B", 
+        var participant = new ParticipantEntity { 
+            FirstName = "Firstname", 
+            LastName = "Lastname", 
             Email = "enrollmentcreate@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
 
-        db.Participants.Add(part);
+        db.Participants.Add(participant);
         await db.SaveChangesAsync();
 
         var model = new EnrollmentModel(
             0, 
             new byte[8], 
             DateTime.UtcNow, 
-            null, part.Id, 
+            null, participant.Id, 
             session.Id
             );
 
@@ -65,8 +68,14 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         await db.SaveChangesAsync();
 
         //                          Assert
-        Assert.True(await db.Enrollments.AnyAsync(x => x.ParticipantId == part.Id));
+        Assert.True(await db.Enrollments.AnyAsync(x => x.ParticipantId == participant.Id));
     }
+
+
+
+
+
+
 
 
 
@@ -81,40 +90,40 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         var repo = new EnrollmentRepository(db);
 
         var course = new CourseEntity { 
-            Title = "Get", 
-            CourseCode = 2, 
+            Title = "GetTitle", 
+            CourseCode = 102, 
             Concurrency = new byte[8] 
         };
 
         db.Courses.Add(course);
-        var session = new CourseSessionEntity { 
+        var coursesession = new CourseSessionEntity { 
             Course = course, 
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(1), 
             Concurrency = new byte[8] };
 
-        db.CourseSessions.Add(session);
-        var part = new ParticipantEntity { 
-            FirstName = "A", 
-            LastName = "B", 
+        db.CourseSessions.Add(coursesession);
+        var participant = new ParticipantEntity { 
+            FirstName = "Firstname", 
+            LastName = "Lastname", 
             Email = "enrollmentread@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
 
-        db.Participants.Add(part);
+        db.Participants.Add(participant);
 
-        var enr = new EnrollmentEntity { 
-            Participant = part, 
-            CourseSession = session, 
+        var enrollment = new EnrollmentEntity { 
+            Participant = participant, 
+            CourseSession = coursesession, 
             Concurrency = new byte[8] 
         };
 
-        db.Enrollments.Add(enr);
+        db.Enrollments.Add(enrollment);
         await db.SaveChangesAsync();
 
         //                          Act
-        var result = await repo.GetByIdAsync(enr.Id);
+        var result = await repo.GetByIdAsync(enrollment.Id);
 
         //                          Assert
         Assert.NotNull(result);
@@ -132,37 +141,37 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         var repo = new EnrollmentRepository(db);
 
         var course = new CourseEntity { 
-            Title = "Update", 
-            CourseCode = 3, 
+            Title = "UpdateTitle", 
+            CourseCode = 103, 
             Concurrency = new byte[8]
         };
 
         db.Courses.Add(course);
-        var session = new CourseSessionEntity { 
+        var coursesession = new CourseSessionEntity { 
             Course = course, 
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(1), 
             Concurrency = new byte[8] 
         };
 
-        db.CourseSessions.Add(session);
-        var part = new ParticipantEntity { 
-            FirstName = "A", 
-            LastName = "B", 
+        db.CourseSessions.Add(coursesession);
+        var participant = new ParticipantEntity { 
+            FirstName = "Firstname", 
+            LastName = "Lastname", 
             Email = "enrollmentupdate@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
 
-        db.Participants.Add(part);
+        db.Participants.Add(participant);
 
-        var enr = new EnrollmentEntity { 
-            Participant = part, 
-            CourseSession = session, 
+        var enrollment = new EnrollmentEntity { 
+            Participant = participant, 
+            CourseSession = coursesession, 
             Concurrency = new byte[8] 
         };
 
-        db.Enrollments.Add(enr);
+        db.Enrollments.Add(enrollment);
         await db.SaveChangesAsync();
 
         // Skapa en ny session att byta till
@@ -177,12 +186,12 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         await db.SaveChangesAsync();
 
         //                          Act
-        var model = repo.ToModel(enr) with { CourseSessionId = session2.Id };
+        var model = repo.ToModel(enrollment) with { CourseSessionId = session2.Id };
         await repo.UpdateAsync(model);
         await db.SaveChangesAsync();
 
         //                          Assert
-        var updated = await db.Enrollments.FirstAsync(x => x.Id == enr.Id);
+        var updated = await db.Enrollments.FirstAsync(x => x.Id == enrollment.Id);
         Assert.Equal(session2.Id, updated.CourseSessionId);
     }
 
@@ -196,42 +205,43 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         //                          Arrange
         await using var db = fixture.CreatedDbContext();
         var course = new CourseEntity { 
-            Title = "Del", 
-            CourseCode = 4,
+            Title = "Deletetitle", 
+            CourseCode = 104,
             Concurrency = new byte[8] 
         };
 
         db.Courses.Add(course);
-        var session = new CourseSessionEntity { 
+        var coursesession = new CourseSessionEntity { 
             Course = course, 
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(1), 
             Concurrency = new byte[8] 
         };
 
-        db.CourseSessions.Add(session);
-        var part = new ParticipantEntity { 
-            FirstName = "A", 
-            LastName = "B", 
-            Email = "eenrollmentdelete@test.com", 
+        db.CourseSessions.Add(coursesession);
+        var participant = new ParticipantEntity { 
+            FirstName = "Firstname", 
+            LastName = "Lastname", 
+            Email = "enrollmentdelete@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
-        db.Participants.Add(part);
-        var enr = new EnrollmentEntity {
-            Participant = part,
-            CourseSession = session, 
+
+        db.Participants.Add(participant);
+        var enrollment = new EnrollmentEntity {
+            Participant = participant,
+            CourseSession = coursesession, 
             Concurrency = new byte[8] 
         };
 
-        db.Enrollments.Add(enr);
+        db.Enrollments.Add(enrollment);
         await db.SaveChangesAsync();
 
         //                          Act
-        db.Enrollments.Remove(enr);
+        db.Enrollments.Remove(enrollment);
         await db.SaveChangesAsync();
 
         //                          Assert
-        Assert.False(await db.Enrollments.AnyAsync(x => x.Id == enr.Id));
+        Assert.False(await db.Enrollments.AnyAsync(x => x.Id == enrollment.Id));
     }
 }

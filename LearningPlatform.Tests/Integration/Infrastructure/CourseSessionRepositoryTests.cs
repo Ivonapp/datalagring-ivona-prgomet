@@ -24,9 +24,9 @@ public sealed class CourseSessionRepositoryTests(SqliteInMemoryFixture fixture)
 
         // BEROEENDET
         var course = new CourseEntity {                 // Course
-            Title = "AddSession", 
-            CourseCode = 10,
-            Description = "Test", 
+            Title = "CreateTitle", 
+            CourseCode = 201,
+            Description = "CreateDescription", 
             Concurrency = new byte[8] 
         };
 
@@ -61,29 +61,29 @@ public sealed class CourseSessionRepositoryTests(SqliteInMemoryFixture fixture)
         await using var db = fixture.CreatedDbContext();
 
         var course = new CourseEntity { 
-            Title = "GetSession", 
-            CourseCode = 20, 
-            Description = "Test", 
+            Title = "ReadTitle", 
+            CourseCode = 202, 
+            Description = "ReadDescription", 
             Concurrency = new byte[8] 
         };
 
         db.Courses.Add(course);
         await db.SaveChangesAsync();
 
-        var session = new CourseSessionEntity { 
+        var coursesession = new CourseSessionEntity { 
             CourseId = course.Id, 
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(7), 
             Concurrency = new byte[8] 
         };
 
-        db.CourseSessions.Add(session);
+        db.CourseSessions.Add(coursesession);
         await db.SaveChangesAsync();
 
         var repo = new CourseSessionRepository(db);
 
         //                      Act
-        var result = await repo.GetByIdAsync(session.Id);
+        var result = await repo.GetByIdAsync(coursesession.Id);
 
         //                      Assert
         Assert.NotNull(result);
@@ -103,9 +103,9 @@ public sealed class CourseSessionRepositoryTests(SqliteInMemoryFixture fixture)
         await using var db = fixture.CreatedDbContext();
 
         var course = new CourseEntity { 
-            Title = "UpdateSession", 
-            CourseCode = 30, 
-            Description = "Test", 
+            Title = "UpdateTitle", 
+            CourseCode = 203, 
+            Description = "UpdateDescription", 
             Concurrency = new byte[8] 
         };
 
@@ -114,19 +114,19 @@ public sealed class CourseSessionRepositoryTests(SqliteInMemoryFixture fixture)
         db.Courses.Add(course);
         await db.SaveChangesAsync();
 
-        var session = new CourseSessionEntity { 
+        var coursesession = new CourseSessionEntity { 
             CourseId = course.Id, 
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(7), 
             Concurrency = new byte[8] 
         };
 
-        db.CourseSessions.Add(session);
+        db.CourseSessions.Add(coursesession);
         await db.SaveChangesAsync();
 
         var repo = new CourseSessionRepository(db);
         var newDate = DateTime.UtcNow.AddMonths(1);
-        var model = repo.ToModel(session) with { EndDate = newDate };
+        var model = repo.ToModel(coursesession) with { EndDate = newDate };
 
 
 
@@ -136,7 +136,7 @@ public sealed class CourseSessionRepositoryTests(SqliteInMemoryFixture fixture)
         await db.SaveChangesAsync();
 
         //                      Assert
-        var updated = await db.CourseSessions.FirstAsync(x => x.Id == session.Id);
+        var updated = await db.CourseSessions.FirstAsync(x => x.Id == coursesession.Id);
         Assert.Equal(newDate.Date, updated.EndDate?.Date);
         Assert.NotNull(updated.UpdatedAt);
     }
@@ -154,32 +154,32 @@ public sealed class CourseSessionRepositoryTests(SqliteInMemoryFixture fixture)
         await using var db = fixture.CreatedDbContext();
 
         var course = new CourseEntity {
-            Title = "DeleteSession", 
-            CourseCode = 40, 
-            Description = "Test", 
+            Title = "DeleteTitle", 
+            CourseCode = 204, 
+            Description = "DeleteDescription", 
             Concurrency = new byte[8] 
         };
 
         db.Courses.Add(course);
         await db.SaveChangesAsync();
 
-        var session = new CourseSessionEntity { 
+        var coursesession = new CourseSessionEntity { 
             CourseId = course.Id, 
             StartDate = DateTime.UtcNow, 
             EndDate = DateTime.UtcNow.AddDays(7), 
             Concurrency = new byte[8] 
         };
 
-        db.CourseSessions.Add(session);
+        db.CourseSessions.Add(coursesession);
         await db.SaveChangesAsync();
 
         //                      Act
-        db.CourseSessions.Remove(session);
+        db.CourseSessions.Remove(coursesession);
         await db.SaveChangesAsync();
 
 
         //                      Assert
-        var exists = await db.CourseSessions.AnyAsync(x => x.Id == session.Id);
+        var exists = await db.CourseSessions.AnyAsync(x => x.Id == coursesession.Id);
         Assert.False(exists);
     }
 }
