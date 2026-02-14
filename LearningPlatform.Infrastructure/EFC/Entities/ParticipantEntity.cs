@@ -7,7 +7,7 @@ namespace LearningPlatform.Infrastructure.EFC.Entities;
 public class ParticipantEntity : IEntity<int>
 {
     public int Id { get; set; }
-    public byte[] Concurrency { get; set; } = null!; //SÄKERHET
+    public byte[] Concurrency { get; set; } = null!;
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
     public string Email { get; set; } = null!;

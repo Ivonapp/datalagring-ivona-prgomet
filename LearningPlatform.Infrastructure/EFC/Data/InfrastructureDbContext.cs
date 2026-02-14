@@ -32,7 +32,7 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.Concurrency)                                 // SÄKERHET
                     .IsRowVersion()                                                     // SÄKERHET
                     .IsConcurrencyToken()                                               // SÄKERHET
-                    .IsRequired();                                                      // SÄKERHET
+                    .IsRequired(false);                                                      // SÄKERHET
 
                     entity.Property(e => e.Title)                                       // TITLE
                     .HasMaxLength(100)
@@ -78,7 +78,7 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.Concurrency)                                 // SÄKERHET
                     .IsRowVersion()                                                     // SÄKERHET
                     .IsConcurrencyToken()                                               // SÄKERHET
-                    .IsRequired();                                                      // SÄKERHET
+                    .IsRequired(false);                                                      // SÄKERHET
 
                     entity.Property(e => e.StartDate)                                   // START DATUM
                     .IsRequired();
@@ -122,7 +122,7 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.Concurrency)                                 // SÄKERHET
                     .IsRowVersion()                                                     // SÄKERHET
                     .IsConcurrencyToken()                                               // SÄKERHET
-                    .IsRequired();                                                      // SÄKERHET
+                    .IsRequired(false);                                                      // SÄKERHET
 
                     entity.Property(e => e.EnrollmentDate)                              // ENROLLMENTDATE
                     .IsRequired();
@@ -162,7 +162,7 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.Concurrency)                                 // SÄKERHET
                      .IsRowVersion()                                                    // SÄKERHET
                      .IsConcurrencyToken()                                              // SÄKERHET
-                     .IsRequired();                                                     // SÄKERHET
+                     .IsRequired(false);                                                     // SÄKERHET
 
                     entity.Property(e => e.FirstName)                                   // FÖRNAMN
                     .HasMaxLength(100)                                                  // MAX ANTAL TECKEN FÖR FÖRNAMN
@@ -214,7 +214,7 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     entity.Property(e => e.Concurrency)                                 // SÄKERHET
                     .IsRowVersion()                                                     // SÄKERHET
                     .IsConcurrencyToken()                                               // SÄKERHET
-                    .IsRequired();                                                      // SÄKERHET
+                    .IsRequired(false);                                                      // SÄKERHET
 
                     entity.Property(e => e.FirstName)                                   // FÖRNAMN
                     .HasMaxLength(100)                                                  // MAX ANTAL TECKEN FÖR FÖRNAMN

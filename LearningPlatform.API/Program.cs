@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using LearningPlatform.Infrastructure.Extensions;
 
 
 // CHATGPT - använde chatgpt som ett bollplank och en "lärare" för att förstå
@@ -24,28 +25,13 @@ using Microsoft.EntityFrameworkCore;
 // kommit igång med att skriva koden här nedan.)
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
+
 builder.Services.AddScoped<ITeacherService, TeacherService>();
-builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
-
 builder.Services.AddScoped<IParticipantService, ParticipantService>();
-builder.Services.AddScoped<IParticipantRepository, ParticipantRepository>();
-
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
-builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
-
 builder.Services.AddScoped<ICourseSessionService, CourseSessionService>();
-builder.Services.AddScoped<ICourseSessionRepository, CourseSessionRepository>();
-
 builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-
-builder.Services.AddScoped<IUnitOfWork, EfcUnitOfWork>();
-
-builder.Services.AddDbContext<InfrastructureDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-
 
 
 builder.Services.AddOpenApi();
@@ -55,8 +41,16 @@ builder.Services.AddSwaggerGen();           //swagger
 builder.Services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
 
-
 var app = builder.Build();
+
+
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<InfrastructureDbContext>();
+    await db.Database.EnsureCreatedAsync();
+}
+
 app.UseSwagger();                           //swagger
 app.UseSwaggerUI();                         //swagger
 app.UseCors("AllowAll");
