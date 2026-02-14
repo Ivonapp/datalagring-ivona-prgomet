@@ -80,7 +80,7 @@ public sealed class ParticipantRepositoryTests(SqliteInMemoryFixture fixture)
             new byte[8], 
             "FirstName", 
             "Lastname",
-            "create@test.com", 
+            "participantcreate@test.com", 
             "076123456", 
             DateTime.UtcNow, 
             null
@@ -92,7 +92,7 @@ public sealed class ParticipantRepositoryTests(SqliteInMemoryFixture fixture)
 
 
     //                  Assert
-        var exists = await db.Participants.AnyAsync(x => x.Email == "create@test.com");
+        var exists = await db.Participants.AnyAsync(x => x.Email == "participantcreate@test.com");
         Assert.True(exists);
     }
 
@@ -109,15 +109,15 @@ public sealed class ParticipantRepositoryTests(SqliteInMemoryFixture fixture)
     {
         //              Arrange
         await using var db = fixture.CreatedDbContext();
-        var part = await TestParticipant(db, "read@test.com");                                  //KALLAR PÅ PARTICIPANT
+        var participant = await TestParticipant(db, "participantread@test.com");                                  //KALLAR PÅ PARTICIPANT
         var repo = new ParticipantRepository(db);
 
         //              Act
-        var result = await repo.GetByIdAsync(part.Id);
+        var result = await repo.GetByIdAsync(participant.Id);
 
         //              Assert
         Assert.NotNull(result);
-        Assert.Equal("read@test.com", result!.Email);
+        Assert.Equal("participantread@test.com", result!.Email);
     }
 
 
@@ -133,7 +133,7 @@ public sealed class ParticipantRepositoryTests(SqliteInMemoryFixture fixture)
 
         //              Arrange
         await using var db = fixture.CreatedDbContext();
-        var participant = await TestParticipant(db, "update@test.com");                               //KALLAR PÅ PARTICIPANT
+        var participant = await TestParticipant(db, "participantupdate@test.com");                               //KALLAR PÅ PARTICIPANT
         var repo = new ParticipantRepository(db);
 
         var model = repo.ToModel(participant) with { FirstName = "NyttEsther" };                      // Ändrar namnet till Esther
@@ -157,14 +157,14 @@ public sealed class ParticipantRepositoryTests(SqliteInMemoryFixture fixture)
     {
         //              Arrange
         await using var db = fixture.CreatedDbContext();
-        var part = await TestParticipant(db, "delete@test.com");                                    //KALLAR PÅ PARTICIPANT
+        var participant = await TestParticipant(db, "participantdelete@test.com");                                    //KALLAR PÅ PARTICIPANT
 
         //              Act
-        db.Participants.Remove(part);
+        db.Participants.Remove(participant);
         await db.SaveChangesAsync();
 
         //              Assert
-        var exists = await db.Participants.AnyAsync(x => x.Id == part.Id);
+        var exists = await db.Participants.AnyAsync(x => x.Id == participant.Id);
         Assert.False(exists);
     }
 
@@ -179,10 +179,10 @@ public sealed class ParticipantRepositoryTests(SqliteInMemoryFixture fixture)
     {
 
         await using var db = fixture.CreatedDbContext();
-        await TestParticipant(db, "email_already_exists@test.com");                                      //Lägge in mailen "email_already_exists" i TestParticipant
+        await TestParticipant(db, "participantemail_already_exists@test.com");                                      //Lägge in mailen "email_already_exists" i TestParticipant
         var repo = new ParticipantRepository(db);
 
-        var exists = await repo.EmailAlreadyExistsAsync("email_already_exists@test.com");               // Testar om "email_already_exists" redan existerar
+        var exists = await repo.EmailAlreadyExistsAsync("participantemail_already_exists@test.com");               // Testar om "email_already_exists" redan existerar
         Assert.True(exists);
     }
 }

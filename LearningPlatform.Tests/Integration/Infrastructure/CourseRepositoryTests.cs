@@ -36,7 +36,7 @@ public sealed class CourseRepositoryTests(SqliteInMemoryFixture fixture)
         await db.SaveChangesAsync();
 
         //                          Assert
-        var exists = await db.Courses.AnyAsync(x => x.CourseCode == 100);
+        var exists = await db.Courses.AnyAsync(x => x.CourseCode == 101);
         Assert.True(exists);
     }
 

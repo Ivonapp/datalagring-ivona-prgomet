@@ -50,14 +50,14 @@ public sealed class TeacherRepositoryTests(SqliteInMemoryFixture fixture)
         var repo = new TeacherRepository(db);
 
         var model = new TeacherModel(
-            0, 
-            "FirstName", 
+            0,
+            "FirstName",
             "LastName",
-            "create@test.com",
-            "076123456", 
-            "Science", 
-            new byte[8], 
-            DateTime.UtcNow, 
+            "teachercreate@test.com",
+            "076123456",
+            "Science",
+            new byte[8],
+            DateTime.UtcNow,
             null
             );
 
@@ -66,7 +66,7 @@ public sealed class TeacherRepositoryTests(SqliteInMemoryFixture fixture)
         await db.SaveChangesAsync();
 
         //                      Assert
-        var check = await db.Teachers.AnyAsync(x => x.Email == "create@test.com");
+        var check = await db.Teachers.AnyAsync(x => x.Email == "teachercreate@test.com");
         Assert.True(check);
     }
 
@@ -80,7 +80,7 @@ public sealed class TeacherRepositoryTests(SqliteInMemoryFixture fixture)
 
         //                  Arrange
         await using var db = fixture.CreatedDbContext();
-        var teacher = await TestTeacher(db, "read@test.com");                                       // KALLAR PÅ TESTTEACHER
+        var teacher = await TestTeacher(db, "teacherread@test.com");                                       // KALLAR PÅ TESTTEACHER
         var repo = new TeacherRepository(db);
 
         //                  Act
@@ -88,7 +88,7 @@ public sealed class TeacherRepositoryTests(SqliteInMemoryFixture fixture)
 
         //                  Assert
         Assert.NotNull(result);
-        Assert.Equal("read@test.com", result!.Email);
+        Assert.Equal("teacherread@test.com", result!.Email);                                                // SPARAR
     }
 
 
@@ -100,8 +100,10 @@ public sealed class TeacherRepositoryTests(SqliteInMemoryFixture fixture)
     [Fact]
     public async Task UpdateAsync_ShouldWork()
     {
+
+        //              Arrange
         await using var db = fixture.CreatedDbContext();
-        var teacher = await TestTeacher(db, "update@test.com");                                     // KALLAR PÅ TESTTEACHER
+        var teacher = await TestTeacher(db, "teacherupdate@test.com");                                     // KALLAR PÅ TESTTEACHER
         var repo = new TeacherRepository(db);
 
         var model = repo.ToModel(teacher) with { FirstName = "NyttJohannes" };                      // Johannes blir det NYA namnet 
@@ -124,12 +126,36 @@ public sealed class TeacherRepositoryTests(SqliteInMemoryFixture fixture)
     public async Task Delete_ShouldWork()
     {
         await using var db = fixture.CreatedDbContext();
-        var teacher = await TestTeacher(db, "delete@test.com");                                     // KALLAR PÅ TESTEACHER
+        var teacher = await TestTeacher(db, "teacherdelete@test.com");                                     // KALLAR PÅ TESTEACHER
 
         db.Teachers.Remove(teacher);
         await db.SaveChangesAsync();
 
         var exists = await db.Teachers.AnyAsync(x => x.Id == teacher.Id);
         Assert.False(exists);
+
+    }
+
+
+
+
+
+
+
+    //                      EJ CRUD
+    // kollar om en mailadress redan är upptagen innan man försöker skapa en ny användare.
+
+    [Fact]
+    public async Task EmailAlreadyExistsAsync_ShouldWork()
+    {
+
+        await using var db = fixture.CreatedDbContext();
+        await TestTeacher(db, "teacheremail_already_exists@test.com");                                      //Lägge in mailen "email_already_exists" i TestTeacher
+        var repo = new TeacherRepository(db);
+
+        var exists = await repo.EmailAlreadyExistsAsync("teacheremail_already_exists@test.com");            // Testar om "email_already_exists" redan existerar
+        Assert.True(exists);
     }
 }
+
+

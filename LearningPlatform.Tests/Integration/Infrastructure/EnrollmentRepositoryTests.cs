@@ -43,7 +43,7 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         var part = new ParticipantEntity { 
             FirstName = "A", 
             LastName = "B", 
-            Email = "create@test.com", 
+            Email = "enrollmentcreate@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
@@ -97,7 +97,7 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         var part = new ParticipantEntity { 
             FirstName = "A", 
             LastName = "B", 
-            Email = "read@test.com", 
+            Email = "enrollmentread@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
@@ -149,7 +149,7 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         var part = new ParticipantEntity { 
             FirstName = "A", 
             LastName = "B", 
-            Email = "update@test.com", 
+            Email = "enrollmentupdate@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
@@ -213,13 +213,17 @@ public sealed class EnrollmentRepositoryTests(SqliteInMemoryFixture fixture)
         var part = new ParticipantEntity { 
             FirstName = "A", 
             LastName = "B", 
-            Email = "delete@test.com", 
+            Email = "eenrollmentdelete@test.com", 
             PhoneNumber = "076123456", 
             Concurrency = new byte[8] 
         };
         db.Participants.Add(part);
+        var enr = new EnrollmentEntity {
+            Participant = part,
+            CourseSession = session, 
+            Concurrency = new byte[8] 
+        };
 
-        var enr = new EnrollmentEntity { Participant = part, CourseSession = session, Concurrency = new byte[8] };
         db.Enrollments.Add(enr);
         await db.SaveChangesAsync();
 
