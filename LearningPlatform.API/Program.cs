@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using LearningPlatform.Infrastructure.Extensions;
+using LearningPlatform.Application.DTOs;
 
 
 // CHATGPT - använde chatgpt som ett bollplank och en "lärare" för att förstå
@@ -51,95 +52,76 @@ if (app.Environment.IsDevelopment())
     await db.Database.EnsureCreatedAsync();
 }
 
+
 app.UseSwagger();                           //swagger
 app.UseSwaggerUI();                         //swagger
 app.UseCors("AllowAll");
-
-
-
-
-
-//HÄR SKA VI SKRIVA ALLA CRUDS FÖR ALLA SERVICES
-
-//TEACHER
-
-// CREATE - HÄMTAR HELA LISTAN MED ALLA LÄRARE
-
-
-
-
-
-// PARTICIPANT
-// CREATE - HÄMTAR HELA LISTAN MED ALLA LÄRARE
-
-
-
-// ENROLLMENT
-// CREATE - HÄMTAR HELA LISTAN MED ALLA LÄRARE
-
-
-
-// COURSESESSION
-// CREATE - HÄMTAR HELA LISTAN MED ALLA LÄRARE
-
-
-
-// COURSE
-// CREATE - HÄMTAR HELA LISTAN MED ALLA LÄRARE
-
-
-
-
-
-
-
-
-
-
-
-
 // app.MapOpenApi(); - kommenterar ut den sålänge då den kan krocka med swagger
 
+
+
+
+
+//                  ENDPOINTS
+
+//                  TEACHER
+// create - skapa/ta emot info
+app.MapPost("/api/teacher", () => { });
+
+
+
+
+// read - hämta info
+app.MapGet("/api/teacher", () =>
+{
+    var list = new List<string>() { "A", "B", "C" }; //Hämta alla lärare?
+
+    return Results.Ok(list);
+}); 
+
+// =
+
+app.MapGet("/api/teacher", async (ITeacherService teacherService) =>
+{
+    var teachers = await teacherService.ListAsync();
+    return Results.Ok(teachers);
+}); //osäker på om dessa är lika
+
+// = DTO
+
+app.MapGet("/api/teacher", async () =>
+{
+    var list = new List<TeacherDto>()
+    {
+        new() { Id = 1, FirstName = "John", LastName = "Svensson", Major = "Matte"},
+
+    };
+
+    return Results.Ok(list);
+});
+
+
+
+
+
+
+// update - uppdatera info
+app.MapPut("/api/teacher", () => { });
+
+// delete - ta bort info
+app.MapDelete("/api/teacher", () => { });
+
+
+
+
+
+
+
+
+
+
+
+
 app.UseHttpsRedirection();
-
-
 app.Run();
 
-
-
-// FÖLJ C R U D
-// Create – skapa nya poster 
-// Read – läsa eller hämta
-// Update – uppdatera eller ändra
-// Delete – ta bort
-
-
-
-
-
-//HANS VIDEO
-
-// CREATE
-//      app.MapPost("/api/users", () => { });
-
-// READ
-//      app.MapGet("/api/users", () => { });
-
-// UPDATE
-//      app.MapPut("/api/users", () => { });
-//      app.MapPatch("/api/users", () => { });
-
-// DELETE
-//      app.MapDelete("/api/users", () => { });
-
-
-
-
-
-
-
-//  return Results.Ok(); // returnerar 200 statuskod (allt har gått bra och jag har utfört det jag ska.)
-//  return Results.NoContent(); // returnerar en 204 statuskod, (jag har utför det jag ska göra, men skickar inte tillbaka nån data)
-//  return Results.BadRequest(); // returnerar en 400. (när något har gått fel på klient sidan, en användare har matat in FEL information.)
-//  return Results.Conflict(); // returnerar en 409 statuskod. (t.ex om vi försöker skapa en användare som REDAN finns.)
-//  return Results.InternalServerError(); // returnerar 500 statuskod. (Ej användaren som gjort fel, utan något i serverkommunikationen har gått fel.)
