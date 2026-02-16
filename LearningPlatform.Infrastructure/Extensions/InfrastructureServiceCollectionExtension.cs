@@ -27,7 +27,10 @@ public static class InfrastructureServiceCollectionExtension
         {
             services.AddSingleton(_ =>
             {
-                var conn = new SqliteConnection("Data Source=:memory:;Cache=Shared");
+
+                // Ändra denna rad (rad 24 typ):
+                var conn = new SqliteConnection("Data Source=LearningPlatform.db"); //DENNA SPARAR ALLT, ÄVEN OM SWAGGER STÄNGS NER
+                //var conn = new SqliteConnection("Data Source=:memory:;Cache=Shared"); DENNA KÖR BARA I KORTMINNE, DÄR ALLT RADERAS NÄR MAN STÄNGER NER SWAGGER
                 conn.Open();
                 return conn;
             });

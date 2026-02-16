@@ -3,21 +3,23 @@ using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Courses;
 using LearningPlatform.Application.Courses.Inputs;
 using LearningPlatform.Application.CourseSessions;
+using LearningPlatform.Application.DTOs;
 using LearningPlatform.Application.Enrollments;
 using LearningPlatform.Application.Enrollments.Inputs;
 using LearningPlatform.Application.Participants;
 using LearningPlatform.Application.Participants.Inputs;
 using LearningPlatform.Application.Services;
 using LearningPlatform.Application.Teachers;
+using LearningPlatform.Application.Teachers.Inputs;
 using LearningPlatform.Infrastructure.EFC.Data;
 using LearningPlatform.Infrastructure.EFC.Repositories;
 using LearningPlatform.Infrastructure.EFC.UnitOfWork;
+using LearningPlatform.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using LearningPlatform.Infrastructure.Extensions;
-using LearningPlatform.Application.DTOs;
 
 
 // CHATGPT - använde chatgpt som ett bollplank och en "lärare" för att förstå
@@ -63,53 +65,45 @@ app.UseCors("AllowAll");
 
 
 //                  ENDPOINTS
-
 //                  TEACHER
-// create - skapa/ta emot info
-app.MapPost("/api/teacher", () => { });
 
 
-
-
-// read - hämta info
-app.MapGet("/api/teacher", () =>
+// CREATE - SKAPAR LÄRARE (hans video)
+app.MapPost("/api/teachers", (TeacherInput request, ITeacherService service) =>
 {
-    var list = new List<string>() { "A", "B", "C" }; //Hämta alla lärare?
+    var input = new TeacherInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.Major);
+    var teacher = service.CreateAsync(input).Result;
 
-    return Results.Ok(list);
-}); 
+    return Results.Created($"/api/teachers/{teacher}", teacher);
+});
 
-// =
 
-app.MapGet("/api/teacher", async (ITeacherService teacherService) =>
+// READ - HÄÖMTAR ALLA LÄRARE
+app.MapGet("/api/teachers", async (ITeacherService teacherService) =>
 {
-    var teachers = await teacherService.ListAsync();
+    var teachers = await teacherService.ListAsync(); //koden för att hämtar alla lärare heter "ListAsync" i ITeacherService.
     return Results.Ok(teachers);
-}); //osäker på om dessa är lika
+});
 
-// = DTO
 
-app.MapGet("/api/teacher", async () =>
+// READ - HÄMTAR SPECIFIK LÄRARE
+app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) =>
 {
-    var list = new List<TeacherDto>()
-    {
-        new() { Id = 1, FirstName = "John", LastName = "Svensson", Major = "Matte"},
+    var teacher = await teacherService.GetByIdAsync(id); // Koden för att hämta en specifik lärare heter "GetByIdAsync" i ITeacherService.
 
-    };
-
-    return Results.Ok(list);
+    return teacher is null ? Results.NotFound() : Results.Ok(teacher);
 });
 
 
 
 
+// EJ PÅBÖRJADE UNDERTILL
 
+// UPDATE - uppdatera info
+app.MapPut("/api/teachers", () => { });
 
-// update - uppdatera info
-app.MapPut("/api/teacher", () => { });
-
-// delete - ta bort info
-app.MapDelete("/api/teacher", () => { });
+// DELETE - ta bort info
+app.MapDelete("/api/teachers", () => { });
 
 
 
