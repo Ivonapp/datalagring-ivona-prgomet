@@ -8,6 +8,7 @@ using LearningPlatform.Application.Enrollments;
 using LearningPlatform.Application.Enrollments.Inputs;
 using LearningPlatform.Application.Participants;
 using LearningPlatform.Application.Participants.Inputs;
+using LearningPlatform.Application.Participants.Outputs;
 using LearningPlatform.Application.Services;
 using LearningPlatform.Application.Teachers;
 using LearningPlatform.Application.Teachers.Inputs;
@@ -35,7 +36,6 @@ builder.Services.AddScoped<IParticipantService, ParticipantService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<ICourseSessionService, CourseSessionService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
-
 
 builder.Services.AddOpenApi();
 
@@ -77,14 +77,12 @@ app.MapPost("/api/teachers", (TeacherInput request, ITeacherService service) =>
     return Results.Created($"/api/teachers/{teacher}", teacher);
 });
 
-
 // READ - HÄÖMTAR ALLA LÄRARE
 app.MapGet("/api/teachers", async (ITeacherService teacherService) =>
 {
     var teachers = await teacherService.ListAsync(); //koden för att hämtar alla lärare heter "ListAsync" i ITeacherService.
     return Results.Ok(teachers);
 });
-
 
 // READ - HÄMTAR SPECIFIK LÄRARE
 app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) =>
@@ -94,7 +92,6 @@ app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) 
     return teacher is null ? Results.NotFound() : Results.Ok(teacher);
 });
 
-
 // UPDATE - tex ändrar email och sparar den nya ändringen
 app.MapPut("/api/teachers/{id}", async (int id, TeacherInput request, ITeacherService service) =>
 {
@@ -102,13 +99,63 @@ app.MapPut("/api/teachers/{id}", async (int id, TeacherInput request, ITeacherSe
     return Results.NoContent(); 
 });
 
-
 // DELETE - raderar läraren
 app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
 {
     await service.DeleteAsync(id); //ITeracherService
     return Results.NoContent(); // 
 });
+
+
+
+
+
+
+//                  PARTICIPANT
+
+// CREATE - SKAPAR PARTICIPANT
+app.MapPost("/api/participants", (ParticipantInput request, IParticipantService service) =>
+{
+    var input = new ParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber);
+    var participant = service.CreateAsync(input).Result;
+
+    return Results.Created($"/api/participants/{participant}", participant);
+});
+
+// READ - H'MTAR ALLA DELTAGARE
+app.MapGet("/api/participants", async (IParticipantService participantService) =>
+{
+    var participants = await participantService.ListAsync(); 
+    return Results.Ok(participants);
+});
+
+// READ - HÄMTAR SPECIFIK DELTAGARE
+app.MapGet("/api/participants/{id}", async (int id, IParticipantService participantService) =>
+{
+    var participant = await participantService.GetByIdAsync(id);
+
+    return participant is null ? Results.NotFound() : Results.Ok(participant);
+});
+
+// UPDATE - tex ändrar email och sparar den nya ändringen
+app.MapPut("/api/participants/{id}", async (int id, ParticipantInput request, IParticipantService service) =>
+{
+    await service.UpdateAsync(id, request); //IParticipantService
+    return Results.NoContent();
+});
+
+// DELETE - raderar participant
+app.MapDelete("/api/participants/{id}", async (int id, IParticipantService service) =>
+{
+    await service.DeleteAsync(id); //IParticipantService
+    return Results.NoContent(); // 
+});
+
+
+
+
+
+
 
 
 
