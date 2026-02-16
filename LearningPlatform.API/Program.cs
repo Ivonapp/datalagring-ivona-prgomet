@@ -95,18 +95,20 @@ app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) 
 });
 
 
+// UPDATE - tex ändrar email och sparar den nya ändringen
+app.MapPut("/api/teachers/{id}", async (int id, TeacherInput request, ITeacherService service) =>
+{
+    await service.UpdateAsync(id, request); //ITeracherService
+    return Results.NoContent(); 
+});
 
 
-// EJ PÅBÖRJADE UNDERTILL
-
-// UPDATE - uppdatera info
-app.MapPut("/api/teachers", () => { });
-
-// DELETE - ta bort info
-app.MapDelete("/api/teachers", () => { });
-
-
-
+// DELETE - raderar läraren
+app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
+{
+    await service.DeleteAsync(id); //ITeracherService
+    return Results.NoContent(); // 
+});
 
 
 
