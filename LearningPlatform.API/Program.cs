@@ -3,6 +3,7 @@ using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Courses;
 using LearningPlatform.Application.Courses.Inputs;
 using LearningPlatform.Application.CourseSessions;
+using LearningPlatform.Application.CourseSessions.Inputs;
 using LearningPlatform.Application.DTOs;
 using LearningPlatform.Application.Enrollments;
 using LearningPlatform.Application.Enrollments.Inputs;
@@ -77,12 +78,14 @@ app.MapPost("/api/teachers", (TeacherInput request, ITeacherService service) =>
     return Results.Created($"/api/teachers/{teacher}", teacher);
 });
 
+
 // READ - HÄÖMTAR ALLA LÄRARE
 app.MapGet("/api/teachers", async (ITeacherService teacherService) =>
 {
     var teachers = await teacherService.ListAsync(); //koden för att hämtar alla lärare heter "ListAsync" i ITeacherService.
     return Results.Ok(teachers);
 });
+
 
 // READ - HÄMTAR SPECIFIK LÄRARE
 app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) =>
@@ -92,12 +95,14 @@ app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) 
     return teacher is null ? Results.NotFound() : Results.Ok(teacher);
 });
 
+
 // UPDATE - tex ändrar email och sparar den nya ändringen
 app.MapPut("/api/teachers/{id}", async (int id, TeacherInput request, ITeacherService service) =>
 {
     await service.UpdateAsync(id, request); //ITeracherService
     return Results.NoContent(); 
 });
+
 
 // DELETE - raderar läraren
 app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
@@ -122,12 +127,14 @@ app.MapPost("/api/participants", (ParticipantInput request, IParticipantService 
     return Results.Created($"/api/participants/{participant}", participant);
 });
 
+
 // READ - H'MTAR ALLA DELTAGARE
 app.MapGet("/api/participants", async (IParticipantService participantService) =>
 {
     var participants = await participantService.ListAsync(); 
     return Results.Ok(participants);
 });
+
 
 // READ - HÄMTAR SPECIFIK DELTAGARE
 app.MapGet("/api/participants/{id}", async (int id, IParticipantService participantService) =>
@@ -137,12 +144,14 @@ app.MapGet("/api/participants/{id}", async (int id, IParticipantService particip
     return participant is null ? Results.NotFound() : Results.Ok(participant);
 });
 
+
 // UPDATE - tex ändrar email och sparar den nya ändringen
 app.MapPut("/api/participants/{id}", async (int id, ParticipantInput request, IParticipantService service) =>
 {
     await service.UpdateAsync(id, request); //IParticipantService
     return Results.NoContent();
 });
+
 
 // DELETE - raderar participant
 app.MapDelete("/api/participants/{id}", async (int id, IParticipantService service) =>
@@ -155,6 +164,111 @@ app.MapDelete("/api/participants/{id}", async (int id, IParticipantService servi
 
 
 
+// Måste skapa kurser INNAN enrollment kan testas, för sen kopplar man deltagare TILL kursen, och då vi utgår från ID, så kan det vara 1 till 101 t. ex.
+// JÄTTERÖRIGT med alla ID namn. Behöver skrivas ut MYCKET TYDLIGARE i Enrollment VAD SOM SKA SKRIVAS IN.
+
+
+
+
+
+
+
+
+
+//                 COURSE
+
+
+// CREATE
+app.MapPost("/api/courses", async (CourseInput request, ICourseService service) =>
+{
+    var courseId = await service.CreateAsync(request);
+    return Results.Created($"/api/courses/{courseId}", courseId);
+});
+
+
+
+// READ
+app.MapGet("/api/courses", async (ICourseService service) =>
+{
+    var courses = await service.ListAsync();
+    return Results.Ok(courses);
+});
+
+
+// UPPDATERA (ÄNDRA ANSÖKAN)
+
+
+// DELETE (ÅNGRA ANSÖKAN)
+
+
+
+
+
+
+
+//                  COURSE SESSION      
+
+// CREATE
+app.MapPost("/api/coursesessions", async (CourseSessionInput request, ICourseSessionService service) =>
+{
+    var sessionId = await service.CreateAsync(request);
+    return Results.Created($"/api/coursesessions/{sessionId}", sessionId);
+});
+
+
+// READ
+app.MapGet("/api/coursesessions", async (ICourseSessionService service) =>
+{
+    var sessions = await service.ListAsync();
+    return Results.Ok(sessions);
+});
+
+
+// UPPDATERA (ÄNDRA ANSÖKAN)
+
+
+// DELETE (ÅNGRA ANSÖKAN)
+
+
+
+
+
+
+
+//              NEDAN KOD PÅGÅENDE 
+//                  ENROLLMENT
+
+// CREATE - Här ansöker deltagare till kurs
+app.MapPost("/api/enrollments", async (EnrollmentInput request, IEnrollmentService service) =>
+{
+    
+    var enrollmentId = await service.CreateAsync(request);
+    
+    return Results.Created($"/api/enrollments/{enrollmentId}", enrollmentId);
+});
+
+
+
+// READ - Se alla ansökningar/anmälningar
+app.MapGet("/api/enrollments", async (IEnrollmentService service) =>
+{
+    var enrollments = await service.ListAsync();
+    return Results.Ok(enrollments);
+});
+
+
+
+// UPPDATERA ansökan / t.ex ändra status på ansökan
+
+
+
+
+// DELETE - Ta bort en ansökan
+app.MapDelete("/api/enrollments/{id}", async (int id, IEnrollmentService service) =>
+{
+    await service.DeleteAsync(id);
+    return Results.NoContent();
+});
 
 
 
