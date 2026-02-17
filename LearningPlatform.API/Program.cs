@@ -48,12 +48,19 @@ builder.Services.AddCors(options => options.AddPolicy("AllowAll", p => p.AllowAn
 var app = builder.Build();
 
 
-if (app.Environment.IsDevelopment())
+
+//  IF raden nedan krockar med mina Migrations, därav kommenterad ut. Kan nog radera den helt men låter den va for now
+/*if (app.Environment.IsDevelopment())
 {
     using var scope = app.Services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<InfrastructureDbContext>();
     await db.Database.EnsureCreatedAsync();
-}
+}*/
+
+
+
+
+
 
 
 app.UseSwagger();                           //swagger
@@ -70,14 +77,11 @@ app.UseCors("AllowAll");
 
 
 // CREATE - SKAPAR LÄRARE (hans video)
-app.MapPost("/api/teachers", (TeacherInput request, ITeacherService service) =>
+app.MapPost("/api/teachers", async (TeacherInput request, ITeacherService service) =>
 {
-    var input = new TeacherInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber, request.Major);
-    var teacher = service.CreateAsync(input).Result;
-
+    var teacher = await service.CreateAsync(request);
     return Results.Created($"/api/teachers/{teacher}", teacher);
 });
-
 
 // READ - HÄÖMTAR ALLA LÄRARE
 app.MapGet("/api/teachers", async (ITeacherService teacherService) =>
@@ -119,14 +123,11 @@ app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
 //                  PARTICIPANT
 
 // CREATE - SKAPAR PARTICIPANT
-app.MapPost("/api/participants", (ParticipantInput request, IParticipantService service) =>
+app.MapPost("/api/participants", async (ParticipantInput request, IParticipantService service) =>
 {
-    var input = new ParticipantInput(request.FirstName, request.LastName, request.Email, request.PhoneNumber);
-    var participant = service.CreateAsync(input).Result;
-
+    var participant = await service.CreateAsync(request);
     return Results.Created($"/api/participants/{participant}", participant);
 });
-
 
 // READ - H'MTAR ALLA DELTAGARE
 app.MapGet("/api/participants", async (IParticipantService participantService) =>
@@ -196,10 +197,18 @@ app.MapGet("/api/courses", async (ICourseService service) =>
 
 
 // UPPDATERA (ÄNDRA ANSÖKAN)
-
+app.MapPut("/api/courses/{id}", async (int id, CourseInput request, ICourseService service) =>
+{
+    await service.UpdateAsync(id, request);
+    return Results.NoContent();
+});
 
 // DELETE (ÅNGRA ANSÖKAN)
-
+app.MapDelete("/api/courses/{id}", async (int id, ICourseService service) =>
+{
+    await service.DeleteAsync(id);
+    return Results.NoContent();
+});
 
 
 
@@ -224,11 +233,19 @@ app.MapGet("/api/coursesessions", async (ICourseSessionService service) =>
 });
 
 
-// UPPDATERA (ÄNDRA ANSÖKAN)
+// UPPDATERA (ÄNDRA ANSÖKAN) **
+app.MapPut("/api/coursesessions/{id}", async (int id, CourseSessionInput request, ICourseSessionService service) =>
+{
+    await service.UpdateAsync(id, request);
+    return Results.NoContent();
+});
 
-
-// DELETE (ÅNGRA ANSÖKAN)
-
+// DELETE (ÅNGRA ANSÖKAN) **
+app.MapDelete("/api/coursesessions/{id}", async (int id, ICourseSessionService service) =>
+{
+    await service.DeleteAsync(id);
+    return Results.NoContent();
+});
 
 
 
@@ -258,9 +275,12 @@ app.MapGet("/api/enrollments", async (IEnrollmentService service) =>
 
 
 
-// UPPDATERA ansökan / t.ex ändra status på ansökan
-
-
+// UPPDATERA ansökan / t.ex ändra status på ansökan **
+app.MapPut("/api/enrollments/{id}", async (int id, EnrollmentInput request, IEnrollmentService service) =>
+{
+    await service.UpdateAsync(id, request);
+    return Results.NoContent();
+});
 
 
 // DELETE - Ta bort en ansökan
