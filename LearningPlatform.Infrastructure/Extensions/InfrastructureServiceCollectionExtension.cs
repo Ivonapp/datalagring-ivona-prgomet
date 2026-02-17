@@ -5,13 +5,8 @@ using LearningPlatform.Infrastructure.EFC.Repositories;
 using LearningPlatform.Infrastructure.EFC.UnitOfWork;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace LearningPlatform.Infrastructure.Extensions;
 
@@ -19,35 +14,18 @@ public static class InfrastructureServiceCollectionExtension
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration, IHostEnvironment env)
     {
-
         ArgumentNullException.ThrowIfNull(configuration);
         ArgumentNullException.ThrowIfNull(env);
 
-        if (env.IsDevelopment())
-        {
-            services.AddSingleton(_ =>
-            {
+        // Hämta din nya connectionstring från appsettings.json
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-                // Ändra denna rad (rad 24 typ):
-                var conn = new SqliteConnection("Data Source=LearningPlatform.db"); //DENNA SPARAR ALLT, ÄVEN OM SWAGGER STÄNGS NER
-                //var conn = new SqliteConnection("Data Source=:memory:;Cache=Shared"); DENNA KÖR BARA I KORTMINNE, DÄR ALLT RADERAS NÄR MAN STÄNGER NER SWAGGER
-                conn.Open();
-                return conn;
-            });
+        // Vi skippar "if (env.IsDevelopment())" för SQLite helt. 
+        // Nu kör vi SQL Server oavsett miljö.
+        services.AddDbContext<InfrastructureDbContext>(options =>
+            options.UseSqlServer(connectionString));
 
-            services.AddDbContext<InfrastructureDbContext>((sp, options) =>
-            {
-                var conn = sp.GetRequiredService<SqliteConnection>();
-                options.UseSqlite(conn);
-            });
-        }
-        else
-        {
-
-            var conn = configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<InfrastructureDbContext>(options => options.UseSqlServer(conn));
-        }
-
+        // Dina repositories
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<ICourseRepository, CourseRepository>();
         services.AddScoped<ICourseSessionRepository, CourseSessionRepository>();

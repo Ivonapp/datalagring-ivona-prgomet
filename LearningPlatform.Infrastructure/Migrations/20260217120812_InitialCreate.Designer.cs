@@ -9,18 +9,18 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LearningPlatform.Infrastructure.Data.Migrations
+namespace LearningPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(InfrastructureDbContext))]
-    [Migration("20260211151042_UpdatedEntitiesWithValueObjects")]
-    partial class UpdatedEntitiesWithValueObjects
+    [Migration("20260217120812_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.3")
+                .HasAnnotation("ProductVersion", "10.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -50,7 +50,6 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -88,7 +87,6 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -125,7 +123,6 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -161,7 +158,6 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
@@ -211,7 +207,6 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 

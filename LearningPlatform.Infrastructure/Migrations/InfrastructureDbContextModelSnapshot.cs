@@ -4,19 +4,16 @@ using LearningPlatform.Infrastructure.EFC.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LearningPlatform.Infrastructure.Data.Migrations
+namespace LearningPlatform.Infrastructure.Migrations
 {
     [DbContext(typeof(InfrastructureDbContext))]
-    [Migration("20260130052931_FirstMigration")]
-    partial class FirstMigration
+    partial class InfrastructureDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +22,22 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("LearningPlatform.Infrastructure.Models.CourseEntity", b =>
+            modelBuilder.Entity("CourseSessionEntityTeacherEntity", b =>
+                {
+                    b.Property<int>("CourseSessionsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TeachersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseSessionsId", "TeachersId");
+
+                    b.HasIndex("TeachersId");
+
+                    b.ToTable("CourseSessionEntityTeacherEntity");
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -35,9 +47,14 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
+
+                    b.Property<int>("CourseCode")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
@@ -48,13 +65,16 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id")
                         .HasName("Pk_Course_Id");
 
                     b.ToTable("Course", (string)null);
                 });
 
-            modelBuilder.Entity("LearningPlatform.Infrastructure.Models.CourseSessionEntity", b =>
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseSessionEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,12 +84,14 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -77,13 +99,18 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id")
                         .HasName("Pk_CourseSession_Id");
+
+                    b.HasIndex("CourseId");
 
                     b.ToTable("CourseSession", (string)null);
                 });
 
-            modelBuilder.Entity("LearningPlatform.Infrastructure.Models.EnrollmentEntity", b =>
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.EnrollmentEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -93,20 +120,32 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int>("CourseSessionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EnrollmentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ParticipantId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id")
                         .HasName("Pk_Enrollment_Id");
 
+                    b.HasIndex("CourseSessionId");
+
+                    b.HasIndex("ParticipantId");
+
                     b.ToTable("Enrollment", (string)null);
                 });
 
-            modelBuilder.Entity("LearningPlatform.Infrastructure.Models.ParticipantEntity", b =>
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.ParticipantEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -116,9 +155,11 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -141,6 +182,9 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(15)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id")
                         .HasName("Pk_Participant_Id");
 
@@ -150,7 +194,7 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Participant", (string)null);
                 });
 
-            modelBuilder.Entity("LearningPlatform.Infrastructure.Models.TeacherEntity", b =>
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.TeacherEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -160,9 +204,11 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
 
                     b.Property<byte[]>("Concurrency")
                         .IsConcurrencyToken()
-                        .IsRequired()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -190,6 +236,9 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
                         .IsUnicode(false)
                         .HasColumnType("varchar(15)");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id")
                         .HasName("Pk_Teacher_Id");
 
@@ -197,6 +246,66 @@ namespace LearningPlatform.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Teacher", (string)null);
+                });
+
+            modelBuilder.Entity("CourseSessionEntityTeacherEntity", b =>
+                {
+                    b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.CourseSessionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("CourseSessionsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.TeacherEntity", null)
+                        .WithMany()
+                        .HasForeignKey("TeachersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseSessionEntity", b =>
+                {
+                    b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.CourseEntity", "Course")
+                        .WithMany("CourseSessions")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.EnrollmentEntity", b =>
+                {
+                    b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.CourseSessionEntity", "CourseSession")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("CourseSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.ParticipantEntity", "Participant")
+                        .WithMany("Enrollments")
+                        .HasForeignKey("ParticipantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseSession");
+
+                    b.Navigation("Participant");
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseEntity", b =>
+                {
+                    b.Navigation("CourseSessions");
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseSessionEntity", b =>
+                {
+                    b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.ParticipantEntity", b =>
+                {
+                    b.Navigation("Enrollments");
                 });
 #pragma warning restore 612, 618
         }
