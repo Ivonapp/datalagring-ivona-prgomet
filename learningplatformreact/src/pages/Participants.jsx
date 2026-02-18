@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
 
-const API = "https://localhost:7240/api/teachers";
+const API = "https://localhost:7240/api/participants";
 
-export default function Teachers() {
-  const [teachers, setTeachers] = useState([]);
+export default function Participants() {
+  const [participants, setParticipants] = useState([]);
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
-    phoneNumber: "",
-    major: ""
+    phoneNumber: ""
   });
 
-  async function fetchTeachers() {
+  async function fetchParticipants() {
     const res = await fetch(API);
-    setTeachers(await res.json());
+    setParticipants(await res.json());
   }
 
-  useEffect(() => { fetchTeachers(); }, []);
+  useEffect(() => { fetchParticipants(); }, []);
 
   const onChange = e =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -31,34 +30,33 @@ export default function Teachers() {
       body: JSON.stringify(form)
     });
 
-    setForm({ firstName:"", lastName:"", email:"", phoneNumber:"", major:"" });
-    fetchTeachers();
+    setForm({ firstName: "", lastName: "", email: "", phoneNumber: "" });
+    fetchParticipants();
   }
 
   async function remove(id) {
     await fetch(`${API}/${id}`, { method: "DELETE" });
-    fetchTeachers();
+    fetchParticipants();
   }
 
   return (
     <div>
-      <h1>LÄRARE</h1>
+      <h1>DELTAGARE</h1>
 
       <form onSubmit={submit}>
         <input name="firstName" placeholder="Förnamn" value={form.firstName} onChange={onChange} required />
         <input name="lastName" placeholder="Efternamn" value={form.lastName} onChange={onChange} required />
         <input name="email" placeholder="Email" value={form.email} onChange={onChange} required />
         <input name="phoneNumber" placeholder="Telefon" value={form.phoneNumber} onChange={onChange} required />
-        <input name="major" placeholder="Ämne" value={form.major} onChange={onChange} required />
         <button type="submit">Skapa</button>
       </form>
 
       <hr />
 
-      {teachers.map(t => (
-        <div key={t.id}>
-          {t.firstName} {t.lastName} – {t.major}
-          <button onClick={() => remove(t.id)}>Radera</button>
+      {participants.map(p => (
+        <div key={p.id}>
+          {p.firstName} {p.lastName}
+          <button onClick={() => remove(p.id)}>Radera</button>
         </div>
       ))}
     </div>

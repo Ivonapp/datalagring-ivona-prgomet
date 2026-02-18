@@ -1,11 +1,14 @@
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Home from './pages/Home'
 import Teachers from './pages/Teachers'
-import ApplyForCourses from './pages/ApplyForCourses'
+import Courses from './pages/Courses'
 import NotFoundPage from './pages/NotFoundPage'
 import Header from './components/Header'
+import Participants from './pages/Participants'
+import Enrollments from './pages/Enrollments'
+import CourseSessions from './pages/CourseSessions'
+
 
 
 function App() {
@@ -20,8 +23,10 @@ function App() {
     <Routes>
       <Route path="/Home" element={<Home />} />
       <Route path="/Teachers" element={<Teachers />} />
-      <Route path="/ApplyForCourses" element={<ApplyForCourses />} />
-
+      <Route path="/Participants" element={<Participants />} />
+      <Route path="/Courses" element={<Courses />} />
+      <Route path="/Enrollments" element={<Enrollments />} />
+      <Route path="/CourseSessions" element={<CourseSessions />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
     </main>

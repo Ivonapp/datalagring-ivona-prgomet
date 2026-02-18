@@ -60,6 +60,9 @@ namespace LearningPlatform.Infrastructure.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<int>("TeacherId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -70,6 +73,8 @@ namespace LearningPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id")
                         .HasName("Pk_Course_Id");
+
+                    b.HasIndex("TeacherId");
 
                     b.ToTable("Course", (string)null);
                 });
@@ -263,6 +268,17 @@ namespace LearningPlatform.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseEntity", b =>
+                {
+                    b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.TeacherEntity", "Teacher")
+                        .WithMany("Courses")
+                        .HasForeignKey("TeacherId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
             modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.CourseSessionEntity", b =>
                 {
                     b.HasOne("LearningPlatform.Infrastructure.EFC.Entities.CourseEntity", "Course")
@@ -306,6 +322,11 @@ namespace LearningPlatform.Infrastructure.Migrations
             modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.ParticipantEntity", b =>
                 {
                     b.Navigation("Enrollments");
+                });
+
+            modelBuilder.Entity("LearningPlatform.Infrastructure.EFC.Entities.TeacherEntity", b =>
+                {
+                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }

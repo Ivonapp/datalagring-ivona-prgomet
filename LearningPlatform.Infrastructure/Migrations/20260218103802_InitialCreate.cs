@@ -12,24 +12,6 @@ namespace LearningPlatform.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Course",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CourseCode = table.Column<int>(type: "int", nullable: false),
-                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
-                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("Pk_Course_Id", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Participant",
                 columns: table => new
                 {
@@ -66,6 +48,31 @@ namespace LearningPlatform.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("Pk_Teacher_Id", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Course",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TeacherId = table.Column<int>(type: "int", nullable: false),
+                    CourseCode = table.Column<int>(type: "int", nullable: false),
+                    Concurrency = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: true),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("Pk_Course_Id", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Course_Teacher_TeacherId",
+                        column: x => x.TeacherId,
+                        principalTable: "Teacher",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -146,6 +153,11 @@ namespace LearningPlatform.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Course_TeacherId",
+                table: "Course",
+                column: "TeacherId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CourseSession_CourseId",
                 table: "CourseSession",
                 column: "CourseId");
@@ -188,9 +200,6 @@ namespace LearningPlatform.Infrastructure.Migrations
                 name: "Enrollment");
 
             migrationBuilder.DropTable(
-                name: "Teacher");
-
-            migrationBuilder.DropTable(
                 name: "CourseSession");
 
             migrationBuilder.DropTable(
@@ -198,6 +207,9 @@ namespace LearningPlatform.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Course");
+
+            migrationBuilder.DropTable(
+                name: "Teacher");
         }
     }
 }

@@ -21,5 +21,8 @@ public class TeacherEntity : IEntity<int>
 
 
     //RELATION I INFRASTRUKTUREDBCONTEXT
+
+    public ICollection<CourseEntity> Courses { get; set; } = []; //Tillagd nyss
+
     public ICollection<CourseSessionEntity> CourseSessions { get; set; } = [];
 }

@@ -60,6 +60,14 @@ public sealed class InfrastructureDbContext(DbContextOptions<InfrastructureDbCon
                     .WithOne(cs => cs.Course)
                     .HasForeignKey(cs => cs.CourseId);
 
+
+
+                    entity.HasOne(c => c.Teacher)
+                  .WithMany(t => t.Courses)
+                  .HasForeignKey(c => c.TeacherId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+
                 });
 
 

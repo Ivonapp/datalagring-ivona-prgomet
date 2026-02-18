@@ -8,6 +8,10 @@ namespace LearningPlatform.Infrastructure.EFC.Entities;
 public class CourseEntity : IEntity<int>
 {
     public int Id { get; set; }
+
+    public int TeacherId { get; set; }
+    public TeacherEntity Teacher { get; set; } = null!;
+
     public int CourseCode { get; set; }                 //DENNA ÄR TILLAGD EFTER COURSEMAPPER
     public byte[] Concurrency { get; set; } = null!;    //SÄKERHET. Denna ska ENDAST finnas i Infrastructure. Emil använder "RowVersion" men jag kör på Hans version "Concurrency"
     public string Title { get; set; } = null!;
