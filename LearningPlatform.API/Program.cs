@@ -74,46 +74,62 @@ app.UseCors("AllowAll");
 
 //                  ENDPOINTS
 //                  TEACHER
+    // CREATE - Skapar lärare
+    app.MapPost("/api/teachers", async (TeacherInput request, ITeacherService service) =>
+    {
+        try
+        {
+            var teacherId = await service.CreateAsync(request);
+            return Results.Created($"/api/teachers/{teacherId}", new { Id = teacherId });
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+    });
 
+    // READ - Hämta alla lärare
+    app.MapGet("/api/teachers", async (ITeacherService service) =>
+    {
+        var teachers = await service.ListAsync();
+        return Results.Ok(teachers);
+    });
 
-// CREATE - SKAPAR LÄRARE (hans video)
-app.MapPost("/api/teachers", async (TeacherInput request, ITeacherService service) =>
-{
-    var teacher = await service.CreateAsync(request);
-    return Results.Created($"/api/teachers/{teacher}", teacher);
-});
+    // READ - Hämta specifik lärare
+    app.MapGet("/api/teachers/{id}", async (int id, ITeacherService service) =>
+    {
+        var teacher = await service.GetByIdAsync(id);
+        return teacher is null ? Results.NotFound() : Results.Ok(teacher);
+    });
 
-// READ - HÄÖMTAR ALLA LÄRARE
-app.MapGet("/api/teachers", async (ITeacherService teacherService) =>
-{
-    var teachers = await teacherService.ListAsync(); //koden för att hämtar alla lärare heter "ListAsync" i ITeacherService.
-    return Results.Ok(teachers);
-});
+    // UPDATE - Ändra lärare
+    app.MapPut("/api/teachers/{id}", async (int id, TeacherInput request, ITeacherService service) =>
+    {
+        try
+        {
+            await service.UpdateAsync(id, request);
+            return Results.NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { error = ex.Message });
+        }
+    });
 
+    // DELETE - Radera lärare
+    app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
+    {
+        try
+        {
+            await service.DeleteAsync(id);
+            return Results.NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { error = ex.Message });
+        }
+    });
 
-// READ - HÄMTAR SPECIFIK LÄRARE
-app.MapGet("/api/teachers/{id}", async (int id, ITeacherService teacherService) =>
-{
-    var teacher = await teacherService.GetByIdAsync(id); // Koden för att hämta en specifik lärare heter "GetByIdAsync" i ITeacherService.
-
-    return teacher is null ? Results.NotFound() : Results.Ok(teacher);
-});
-
-
-// UPDATE - tex ändrar email och sparar den nya ändringen
-app.MapPut("/api/teachers/{id}", async (int id, TeacherInput request, ITeacherService service) =>
-{
-    await service.UpdateAsync(id, request); //ITeracherService
-    return Results.NoContent(); 
-});
-
-
-// DELETE - raderar läraren
-app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
-{
-    await service.DeleteAsync(id); //ITeracherService
-    return Results.NoContent(); // 
-});
 
 
 
@@ -122,56 +138,61 @@ app.MapDelete("/api/teachers/{id}", async (int id, ITeacherService service) =>
 
 //                  PARTICIPANT
 
-// CREATE - SKAPAR PARTICIPANT
-app.MapPost("/api/participants", async (ParticipantInput request, IParticipantService service) =>
-{
-    var participant = await service.CreateAsync(request);
-    return Results.Created($"/api/participants/{participant}", participant);
-});
+    // CREATE - Skapar participant
+    app.MapPost("/api/participants", async (ParticipantInput request, IParticipantService service) =>
+    {
+        try
+        {
+            var participantId = await service.CreateAsync(request);
+            return Results.Created($"/api/participants/{participantId}", new { Id = participantId });
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+    });
 
-// READ - H'MTAR ALLA DELTAGARE
-app.MapGet("/api/participants", async (IParticipantService participantService) =>
-{
-    var participants = await participantService.ListAsync(); 
-    return Results.Ok(participants);
-});
+    // READ - Hämta alla deltagare
+    app.MapGet("/api/participants", async (IParticipantService service) =>
+    {
+        var participants = await service.ListAsync();
+        return Results.Ok(participants);
+    });
 
+    // READ - Hämta specifik deltagare
+    app.MapGet("/api/participants/{id}", async (int id, IParticipantService service) =>
+    {
+        var participant = await service.GetByIdAsync(id);
+        return participant is null ? Results.NotFound() : Results.Ok(participant);
+    });
 
-// READ - HÄMTAR SPECIFIK DELTAGARE
-app.MapGet("/api/participants/{id}", async (int id, IParticipantService participantService) =>
-{
-    var participant = await participantService.GetByIdAsync(id);
+    // UPDATE - Ändra participant
+    app.MapPut("/api/participants/{id}", async (int id, ParticipantInput request, IParticipantService service) =>
+    {
+        try
+        {
+            await service.UpdateAsync(id, request);
+            return Results.NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { error = ex.Message });
+        }
+    });
 
-    return participant is null ? Results.NotFound() : Results.Ok(participant);
-});
-
-
-// UPDATE - tex ändrar email och sparar den nya ändringen
-app.MapPut("/api/participants/{id}", async (int id, ParticipantInput request, IParticipantService service) =>
-{
-    await service.UpdateAsync(id, request); //IParticipantService
-    return Results.NoContent();
-});
-
-
-// DELETE - raderar participant
-app.MapDelete("/api/participants/{id}", async (int id, IParticipantService service) =>
-{
-    await service.DeleteAsync(id); //IParticipantService
-    return Results.NoContent(); // 
-});
-
-
-
-
-
-// Måste skapa kurser INNAN enrollment kan testas, för sen kopplar man deltagare TILL kursen, och då vi utgår från ID, så kan det vara 1 till 101 t. ex.
-// JÄTTERÖRIGT med alla ID namn. Behöver skrivas ut MYCKET TYDLIGARE i Enrollment VAD SOM SKA SKRIVAS IN.
-
-
-
-
-
+    // DELETE - Radera participant
+    app.MapDelete("/api/participants/{id}", async (int id, IParticipantService service) =>
+    {
+        try
+        {
+            await service.DeleteAsync(id);
+            return Results.NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { error = ex.Message });
+        }
+    });
 
 
 
@@ -179,36 +200,60 @@ app.MapDelete("/api/participants/{id}", async (int id, IParticipantService servi
 //                 COURSE
 
 
-// CREATE
-app.MapPost("/api/courses", async (CourseInput request, ICourseService service) =>
-{
-    var courseId = await service.CreateAsync(request);
-    return Results.Created($"/api/courses/{courseId}", courseId);
-});
+    // CREATE - Skapa kurs
+    app.MapPost("/api/courses", async (CourseInput request, ICourseService service) =>
+    {
+        try
+        {
+            var courseId = await service.CreateAsync(request);
+            return Results.Created($"/api/courses/{courseId}", new { Id = courseId });
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+    });
+
+    // READ - Hämta alla kurser
+    app.MapGet("/api/courses", async (ICourseService service) =>
+    {
+        var courses = await service.ListAsync();
+        return Results.Ok(courses);
+    });
+
+    // UPDATE - Ändra kurs
+    app.MapPut("/api/courses/{id}", async (int id, CourseInput request, ICourseService service) =>
+    {
+        try
+        {
+            await service.UpdateAsync(id, request);
+            return Results.NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { error = ex.Message });
+        }
+    });
+
+    // DELETE - Radera kurs
+    app.MapDelete("/api/courses/{id}", async (int id, ICourseService service) =>
+    {
+        try
+        {
+            await service.DeleteAsync(id);
+            return Results.NoContent();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.NotFound(new { error = ex.Message });
+        }
+    });
 
 
 
-// READ
-app.MapGet("/api/courses", async (ICourseService service) =>
-{
-    var courses = await service.ListAsync();
-    return Results.Ok(courses);
-});
 
 
-// UPPDATERA (ÄNDRA ANSÖKAN)
-app.MapPut("/api/courses/{id}", async (int id, CourseInput request, ICourseService service) =>
-{
-    await service.UpdateAsync(id, request);
-    return Results.NoContent();
-});
 
-// DELETE (ÅNGRA ANSÖKAN)
-app.MapDelete("/api/courses/{id}", async (int id, ICourseService service) =>
-{
-    await service.DeleteAsync(id);
-    return Results.NoContent();
-});
 
 
 
@@ -220,32 +265,53 @@ app.MapDelete("/api/courses/{id}", async (int id, ICourseService service) =>
 // CREATE
 app.MapPost("/api/coursesessions", async (CourseSessionInput request, ICourseSessionService service) =>
 {
-    var sessionId = await service.CreateAsync(request);
-    return Results.Created($"/api/coursesessions/{sessionId}", sessionId);
+    try
+    {
+        var sessionId = await service.CreateAsync(request);
+        return Results.Created($"/api/coursesessions/{sessionId}", new { Id = sessionId });
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
 });
 
-
-// READ
+// READ - Hämta alla kurs-sessioner
 app.MapGet("/api/coursesessions", async (ICourseSessionService service) =>
 {
     var sessions = await service.ListAsync();
     return Results.Ok(sessions);
 });
 
-
-// UPPDATERA (ÄNDRA ANSÖKAN) **
+// UPDATE - Ändra kurs-session
 app.MapPut("/api/coursesessions/{id}", async (int id, CourseSessionInput request, ICourseSessionService service) =>
 {
-    await service.UpdateAsync(id, request);
-    return Results.NoContent();
+    try
+    {
+        await service.UpdateAsync(id, request);
+        return Results.NoContent();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.NotFound(new { error = ex.Message });
+    }
 });
 
-// DELETE (ÅNGRA ANSÖKAN) **
+// DELETE - Radera kurs-session
 app.MapDelete("/api/coursesessions/{id}", async (int id, ICourseSessionService service) =>
 {
-    await service.DeleteAsync(id);
-    return Results.NoContent();
+    try
+    {
+        await service.DeleteAsync(id);
+        return Results.NoContent();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.NotFound(new { error = ex.Message });
+    }
 });
+
+
 
 
 
@@ -255,39 +321,53 @@ app.MapDelete("/api/coursesessions/{id}", async (int id, ICourseSessionService s
 //              NEDAN KOD PÅGÅENDE 
 //                  ENROLLMENT
 
-// CREATE - Här ansöker deltagare till kurs
+// CREATE - Ansökan till kurs
 app.MapPost("/api/enrollments", async (EnrollmentInput request, IEnrollmentService service) =>
 {
-    
-    var enrollmentId = await service.CreateAsync(request);
-    
-    return Results.Created($"/api/enrollments/{enrollmentId}", enrollmentId);
+    try
+    {
+        var enrollmentId = await service.CreateAsync(request);
+        return Results.Created($"/api/enrollments/{enrollmentId}", new { Id = enrollmentId });
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.BadRequest(new { error = ex.Message });
+    }
 });
 
-
-
-// READ - Se alla ansökningar/anmälningar
+// READ - Alla ansökningar
 app.MapGet("/api/enrollments", async (IEnrollmentService service) =>
 {
     var enrollments = await service.ListAsync();
     return Results.Ok(enrollments);
 });
 
-
-
-// UPPDATERA ansökan / t.ex ändra status på ansökan **
+// UPDATE - Ändra ansökan
 app.MapPut("/api/enrollments/{id}", async (int id, EnrollmentInput request, IEnrollmentService service) =>
 {
-    await service.UpdateAsync(id, request);
-    return Results.NoContent();
+    try
+    {
+        await service.UpdateAsync(id, request);
+        return Results.NoContent();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.NotFound(new { error = ex.Message });
+    }
 });
 
-
-// DELETE - Ta bort en ansökan
+// DELETE - Ta bort ansökan
 app.MapDelete("/api/enrollments/{id}", async (int id, IEnrollmentService service) =>
 {
-    await service.DeleteAsync(id);
-    return Results.NoContent();
+    try
+    {
+        await service.DeleteAsync(id);
+        return Results.NoContent();
+    }
+    catch (ArgumentException ex)
+    {
+        return Results.NotFound(new { error = ex.Message });
+    }
 });
 
 

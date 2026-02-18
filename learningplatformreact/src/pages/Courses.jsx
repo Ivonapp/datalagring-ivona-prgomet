@@ -1,69 +1,111 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const API = "https://localhost:7240/api/courses";
-
-export default function Courses() {
+const Courses = () => {
   const [courses, setCourses] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState(null);
   const [form, setForm] = useState({
     title: "",
     description: "",
-    courseCode: ""
+    courseCode: "",
+    teacherId: "",
   });
 
-  async function fetchCourses() {
-    const res = await fetch(API);
+  const apiUrl = "https://localhost:7240/api/courses";
+
+  const fetchCourses = async () => {
+    const res = await fetch(apiUrl);
     const data = await res.json();
     setCourses(data);
-  }
+  };
+
+  const fetchCourseDetail = async (id) => {
+    const res = await fetch(`${apiUrl}/${id}`);
+    const data = await res.json();
+    setSelectedCourse(data);
+    setForm({
+      title: data.title || "",
+      description: data.description || "",
+      courseCode: data.courseCode || "",
+      teacherId: data.teacherId || "",
+    });
+  };
+
+  const createCourse = async () => {
+    await fetch(apiUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    setForm({ title: "", description: "", courseCode: "", teacherId: "" });
+    fetchCourses();
+  };
+
+  const updateCourse = async (id) => {
+    await fetch(`${apiUrl}/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    setSelectedCourse(null);
+    fetchCourses();
+  };
+
+  const deleteCourse = async (id) => {
+    await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+    fetchCourses();
+  };
 
   useEffect(() => { fetchCourses(); }, []);
 
-  const onChange = e =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  async function submit(e) {
-    e.preventDefault();
-
-    const payload = {
-      title: form.title,
-      description: form.description,
-      courseCode: parseInt(form.courseCode)
-    };
-
-    await fetch(API, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-
-    setForm({ title: "", description: "", courseCode: "" });
-    fetchCourses();
-  }
-
-  async function remove(id) {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
-    fetchCourses();
-  }
-
   return (
     <div>
-      <h1>KURSER</h1>
+      <h1>Courses</h1>
 
-      <form onSubmit={submit}>
-        <input name="title" placeholder="Titel" value={form.title} onChange={onChange} required />
-        <input name="description" placeholder="Beskrivning" value={form.description} onChange={onChange} />
-        <input type="number" name="courseCode" placeholder="Kurskod" value={form.courseCode} onChange={onChange} required />
-        <button type="submit">Skapa</button>
-      </form>
+      {/* CREATE */}
+      <div>
+        <h2>Create Course</h2>
+        <input placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}/>
+        <input placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}/>
+        <input placeholder="Course Code" value={form.courseCode} onChange={e => setForm({ ...form, courseCode: e.target.value })}/>
+        <input placeholder="Teacher ID" value={form.teacherId} onChange={e => setForm({ ...form, teacherId: e.target.value })}/>
+        <button onClick={createCourse}>Create</button>
+      </div>
 
-      <hr />
+      {/* LIST */}
+      <h2>All Courses</h2>
+      <ul>
+        {courses.map(c => (
+          <li key={c.id}>
+            {c.title} ({c.courseCode})
+            <button onClick={() => fetchCourseDetail(c.id)}>Details</button>
+            <button onClick={() => deleteCourse(c.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
 
-      {courses.map(c => (
-        <div key={c.id}>
-          {c.title} (Kod: {c.courseCode})
-          <button onClick={() => remove(c.id)}>Radera</button>
+      {/* DETAIL */}
+      {selectedCourse && (
+        <div>
+          <h2>Course Details</h2>
+          <p>ID: {selectedCourse.id}</p>
+          <p>Title: {selectedCourse.title}</p>
+          <p>Description: {selectedCourse.description}</p>
+          <p>Course Code: {selectedCourse.courseCode}</p>
+          <p>Teacher ID: {selectedCourse.teacherId}</p>
+
+          <h3>Course Sessions</h3>
+          <ul>
+            {selectedCourse.courseSessions?.map(cs => (
+              <li key={cs.id}>
+                {new Date(cs.startDate).toLocaleDateString()} - {new Date(cs.endDate).toLocaleDateString()} | Enrollments: {cs.enrollments?.length || 0}
+              </li>
+            ))}
+          </ul>
+
+          {/* UPDATE */}
+          <h3>Update Course</h3>
+          <input placeholder="Title" value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}/>
+          <input placeholder="Description" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}/>
+          <input placeholder="Course Code" value={form.courseCode} onChange={e => setForm({ ...form, courseCode: e.target.value })}/>
+          <input placeholder="Teacher ID" value={form.teacherId} onChange={e => setForm({ ...form, teacherId: e.target.value })}/>
+          <button onClick={() => updateCourse(selectedCourse.id)}>Update</button>
+          <button onClick={() => setSelectedCourse(null)}>Close</button>
         </div>
-      ))}
+      )}
     </div>
   );
-}
+};
+
+export default Courses;

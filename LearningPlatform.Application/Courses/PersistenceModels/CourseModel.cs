@@ -11,7 +11,8 @@ public sealed record CourseModel(
         string Title,
         string Description,
         DateTime CreatedAt,
-        DateTime? UpdatedAt
+        DateTime? UpdatedAt,
+        int TeacherId
 );
 
 

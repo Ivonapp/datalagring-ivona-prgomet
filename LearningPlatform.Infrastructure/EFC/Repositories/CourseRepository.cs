@@ -25,8 +25,8 @@ namespace LearningPlatform.Infrastructure.EFC.Repositories
                 entity.Title,
                 entity.Description,
                 entity.CreatedAt,
-                entity.UpdatedAt
-
+                entity.UpdatedAt,
+                entity.TeacherId
                 );
 
 

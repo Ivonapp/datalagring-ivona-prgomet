@@ -2,130 +2,117 @@
 using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Enrollments;
 using LearningPlatform.Application.Enrollments.Inputs;
+using LearningPlatform.Application.Enrollments.Outputs;
 using LearningPlatform.Application.Enrollments.PersistenceModels;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Xunit;
 
-namespace LearningPlatform.Tests.UnitTests;
+public sealed class EnrollmentServiceTest
+{
+    private readonly Mock<IEnrollmentRepository> repo = new();
+    private readonly Mock<IUnitOfWork> uow = new();
 
+    private EnrollmentService CreateService() => new(repo.Object, uow.Object);
 
-    public class EnrollmentServiceTests
-    {
-
-
-
-        //                                              CREATE - skapar och sprar enrollment
-        [Fact]
-        public async Task Create_ShouldAddEnrollment_AndSave()
-        {
-            var mockEnrollmentRepository = new Mock<IEnrollmentRepository>();
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            var service = new EnrollmentService(mockEnrollmentRepository.Object, mockUnitOfWork.Object);
-
-            var input = new EnrollmentInput(
-                1,
-                1
-                );                                                              //ID för både participant och courseSession
-
-            await service.CreateAsync(input);
-
-            mockEnrollmentRepository.Verify(r => r.AddAsync(It.IsAny<EnrollmentModel>(), It.IsAny<CancellationToken>()), Times.Once);
-            mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-
-
-
-        //                                              READ - Hämtar Enrollment
-        [Fact]
-        public async Task GetById_ShouldReturnEnrollment_WhenExists()
-        {
-            var mockEnrollmentRepository = new Mock<IEnrollmentRepository>();
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            var service = new EnrollmentService(mockEnrollmentRepository.Object, mockUnitOfWork.Object);
-
-            var existing = new EnrollmentModel(
-                1,
-                [],
-                DateTime.UtcNow,
-                null,
-                1,
-                1
-                );
-            mockEnrollmentRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
-
-            var result = await service.GetByIdAsync(1);
-
-            Assert.NotNull(result);
-            Assert.Equal(1, result.ParticipantId);
-            Assert.Equal(1, result.CourseSessionId);
-        }
-
-
-
-
-    //                                              UPDATE - kontrollerar ändring
+    // CREATE
     [Fact]
-        public async Task Update_ShouldUpdateEnrollment_WhenExists()
-        {
-            var mockEnrollmentRepository = new Mock<IEnrollmentRepository>();
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            var service = new EnrollmentService(mockEnrollmentRepository.Object, mockUnitOfWork.Object);
+    public async Task Create_ShouldReturnId()
+    {
+        var service = CreateService();
+        var input = new EnrollmentInput(101, 202);
 
-            var existing = new EnrollmentModel(
-                1,
-                [],
-                DateTime.UtcNow,
-                null,
-                1,
-                1
-                );
-            mockEnrollmentRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
+        repo.Setup(r => r.AddAsync(It.IsAny<EnrollmentModel>(), It.IsAny<CancellationToken>()))
+            .Callback<EnrollmentModel, CancellationToken>((m, ct) =>
+            {
+                var field = typeof(EnrollmentModel).GetProperty("Id")!;
+                field.SetValue(m, 1);
+            })
+            .Returns(Task.CompletedTask);
 
-            var input = new EnrollmentInput(2, 3);                                                                    // Ny participant och courseSession
+        var id = await service.CreateAsync(input);
 
-            await service.UpdateAsync(1, input);
-
-            mockEnrollmentRepository.Verify(r => r.UpdateAsync(It.Is<EnrollmentModel>(e => e.ParticipantId == 2 && e.CourseSessionId == 3), It.IsAny<CancellationToken>()), Times.Once);
-            mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        }
-
-
-
-
-        //                                              DELETE - raderar enrollmen
-        [Fact]
-        public async Task Delete_ShouldRemoveEnrollment_WhenExists()
-        {
-            var mockEnrollmentRepository = new Mock<IEnrollmentRepository>();
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-            var service = new EnrollmentService(mockEnrollmentRepository.Object, mockUnitOfWork.Object);
-
-            var existing = new EnrollmentModel(
-                1,
-                [],
-                DateTime.UtcNow,
-                null,
-                1,
-                1
-                );
-
-            mockEnrollmentRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(existing);
-
-            await service.DeleteAsync(1);
-
-            mockEnrollmentRepository.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);
-            mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        }
+        Assert.Equal(1, id);
     }
 
+    // READ BY ID
+    [Fact]
+    public async Task Read_ShouldReturnEnrollment()
+    {
+        var service = CreateService();
 
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new EnrollmentModel(1, Array.Empty<byte>(), DateTime.UtcNow, null, 101, 202));
 
+        var result = await service.GetByIdAsync(1);
 
+        Assert.NotNull(result);
+        Assert.Equal(101, result!.ParticipantId);
+        Assert.Equal(202, result.CourseSessionId);
+    }
 
+    // LIST
+    [Fact]
+    public async Task List_ShouldReturnEnrollments()
+    {
+        var service = CreateService();
 
+        repo.Setup(r => r.ListAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<EnrollmentModel>
+            {
+                new EnrollmentModel(1, Array.Empty<byte>(), DateTime.UtcNow, null, 101, 202)
+            });
 
+        var list = await service.ListAsync();
 
- 
+        Assert.Single(list);
+    }
+
+    // UPDATE
+    [Fact]
+    public async Task Update_ShouldModifyEnrollment()
+    {
+        var service = CreateService();
+
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new EnrollmentModel(1, Array.Empty<byte>(), DateTime.UtcNow, null, 101, 202));
+
+        var input = new EnrollmentInput(303, 404);
+
+        await service.UpdateAsync(1, input);
+
+        repo.Verify(r => r.UpdateAsync(It.Is<EnrollmentModel>(m =>
+            m.Id == 1 &&
+            m.ParticipantId == 303 &&
+            m.CourseSessionId == 404
+        ), It.IsAny<CancellationToken>()), Times.Once);
+
+        uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // DELETE
+    [Fact]
+    public async Task Delete_ShouldRemoveEnrollment()
+    {
+        var service = CreateService();
+
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new EnrollmentModel(1, Array.Empty<byte>(), DateTime.UtcNow, null, 101, 202));
+
+        await service.DeleteAsync(1);
+
+        repo.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);
+        uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // DELETE 
+    [Fact]
+    public async Task Delete_ShouldThrow_WhenMissing()
+    {
+        var service = CreateService();
+
+        repo.Setup(r => r.GetByIdAsync(9, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((EnrollmentModel?)null);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.DeleteAsync(9));
+    }
+}

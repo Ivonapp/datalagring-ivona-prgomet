@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
-import Home from './pages/Home'
 import Teachers from './pages/Teachers'
 import Courses from './pages/Courses'
 import NotFoundPage from './pages/NotFoundPage'
@@ -21,7 +20,6 @@ function App() {
 
 
     <Routes>
-      <Route path="/Home" element={<Home />} />
       <Route path="/Teachers" element={<Teachers />} />
       <Route path="/Participants" element={<Participants />} />
       <Route path="/Courses" element={<Courses />} />

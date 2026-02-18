@@ -3,149 +3,127 @@ using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.CourseSessions;
 using LearningPlatform.Application.CourseSessions.Inputs;
 using LearningPlatform.Application.CourseSessions.PersistenceModels;
+using LearningPlatform.Application.CourseSessions.Outputs;
 using Moq;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
-namespace LearningPlatform.Tests.UnitTests;
-
-public class CourseSessionServiceTest
+public sealed class CourseSessionServiceTest
 {
+    private readonly Mock<ICourseSessionRepository> repo = new();
+    private readonly Mock<IUnitOfWork> uow = new();
 
-    //                     CREATE - skapar CourseSession
+    private CourseSessionService CreateService()
+        => new(repo.Object, uow.Object);
+
+    // CREATE
     [Fact]
-    public async Task Should_Create_And_Save_CourseSession()
+    public async Task Create_ShouldRunWithoutErrors()
     {
-        // ARRANGE
-        var mockCourseSessionRepository = new Mock<ICourseSessionRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseSessionService(mockCourseSessionRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
-        var input = new CourseSessionInput(
-        1,
-        DateTime.Now,
-        null
-        );
+        var input = new CourseSessionInput(1, DateTime.UtcNow, DateTime.UtcNow.AddDays(1));
 
-        // ACT
-        await service.CreateAsync(input);
+        repo.Setup(r => r.AddAsync(It.IsAny<CourseSessionModel>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
-        // ASSERT
-        mockCourseSessionRepository.Verify(r => r.AddAsync(It.IsAny<CourseSessionModel>(), It.IsAny<CancellationToken>()), Times.Once);     // Kollar att AddAsync försökte lägga till en kurs-session i repositoryt
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);                                          // Ändring sparas
+        var ex = await Record.ExceptionAsync(() => service.CreateAsync(input));
+
+        Assert.Null(ex);
     }
 
-
-
-
-
-
-// READ (GetById)
+    // READ
     [Fact]
-    public async Task GetById_ShouldReturnSession_WhenExists()
+    public async Task Read_ShouldReturnCourseSession()
     {
-        // ARRANGE
-        var mockCourseSessionRepository = new Mock<ICourseSessionRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseSessionService(mockCourseSessionRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
+        var now = DateTime.UtcNow;
 
-        var existing = new CourseSessionModel(
-            1,
-            10,
-            [],
-            DateTime.Now,
-            null,
-            DateTime.UtcNow,
-            null
-            );
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseSessionModel(1, 1, Array.Empty<byte>(), now, now.AddHours(2), now, null));
 
-        mockCourseSessionRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(existing);
-
-        // ACT
         var result = await service.GetByIdAsync(1);
 
-        // ASSERT
         Assert.NotNull(result);
-        Assert.Equal(1, result.Id);
+        Assert.Equal(1, result!.CourseId);
+        Assert.Equal(now, result.StartDate);
     }
 
+    // READ 
+    [Fact]
+    public async Task List_ShouldReturnCourseSessions()
+    {
+        var service = CreateService();
 
+        var now = DateTime.UtcNow;
 
+        repo.Setup(r => r.ListAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<CourseSessionModel>
+            {
+                new CourseSessionModel(1, 1, Array.Empty<byte>(), now, now.AddHours(2), now, null)
+            });
 
+        var list = await service.ListAsync();
 
+        Assert.Single(list);
+    }
 
     // UPDATE
     [Fact]
-    public async Task Update_ShouldModifySession_WhenExists()
+    public async Task Update_ShouldCallRepository()
     {
-        // ARRANGE
-        var mockCourseSessionRepository = new Mock<ICourseSessionRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseSessionService(mockCourseSessionRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
-        var existing = new CourseSessionModel(
-            1,
-            10,
-            [],
-            DateTime.Now,
-            null,
-            DateTime.UtcNow,
-            null
-            );
+        var now = DateTime.UtcNow;
 
-        mockCourseSessionRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(existing);
+        // Repo returnerar "existing" model
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseSessionModel(1, 1, Array.Empty<byte>(), now, now.AddHours(2), now, null));
 
-        var input = new CourseSessionInput(
-            10,
-            DateTime.Now.AddDays(1),
-            null
-            );
+        var input = new CourseSessionInput(2, now.AddDays(1), now.AddDays(2));
 
-        // ACT
         await service.UpdateAsync(1, input);
 
-        // ASSERT
-        mockCourseSessionRepository.Verify(r => r.UpdateAsync(It.IsAny<CourseSessionModel>(), It.IsAny<CancellationToken>()), Times.Once);
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        repo.Verify(r => r.UpdateAsync(It.Is<CourseSessionModel>(m =>
+            m.Id == 1 &&
+            m.CourseId == 2 &&
+            m.StartDate == now.AddDays(1) &&
+            m.EndDate == now.AddDays(2)
+        ), It.IsAny<CancellationToken>()), Times.Once);
+
+        uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
-
-
-
-
-
-
 
     // DELETE
     [Fact]
-    public async Task Delete_ShouldRemoveSession_WhenExists()
+    public async Task Delete_ShouldCallRepository()
     {
-        // ARRANGE
-        var mockCourseSessionRepository = new Mock<ICourseSessionRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseSessionService(mockCourseSessionRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
-        var existing = new CourseSessionModel(
-            1,
-            10,
-            [],
-            DateTime.Now,
-            null,
-            DateTime.UtcNow,
-            null
-            );
+        var now = DateTime.UtcNow;
 
-        mockCourseSessionRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(existing);
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseSessionModel(1, 1, Array.Empty<byte>(), now, now.AddHours(2), now, null));
 
-        // ACT
         await service.DeleteAsync(1);
 
-        // ASSERT
-        mockCourseSessionRepository.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        repo.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);
+        uow.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    // DELETE 
+    [Fact]
+    public async Task Delete_ShouldThrow_WhenMissing()
+    {
+        var service = CreateService();
+
+        repo.Setup(r => r.GetByIdAsync(999, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((CourseSessionModel?)null);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.DeleteAsync(999));
     }
 }

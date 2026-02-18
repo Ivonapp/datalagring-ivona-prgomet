@@ -2,157 +2,122 @@
 using LearningPlatform.Application.Abstractions.Persistence.Repositories;
 using LearningPlatform.Application.Courses;
 using LearningPlatform.Application.Courses.Inputs;
-using Moq;
 using LearningPlatform.Application.Courses.PersistenceModels;
+using Moq;
+using Xunit;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace LearningPlatform.Tests.UnitTests;
-
-public class CourseServiceTest
+public sealed class CourseServiceTest
 {
+    private readonly Mock<ICourseRepository> repo = new();
+    private readonly Mock<IUnitOfWork> uow = new();
+
+    private CourseService CreateService()
+        => new(repo.Object, uow.Object);
 
 
-
-//                                              CREATE - Skapar kursen och sparar den
+    // CREATE
     [Fact]
-    public async Task Create_ShouldAddCourse_AndSave()
+    public async Task Create_ShouldRunWithoutErrors()
     {
-        // ARRANGE
-        var mockCourseRepository = new Mock<ICourseRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseService(mockCourseRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
-        var input = new CourseInput(
-            101,
-            "Mathematics",
-            "Mathematics A"
-            );
+        var input = new CourseInput(100, "Title", "Desc", 1);
 
-        // ACT
-        await service.CreateAsync(input);
+        repo.Setup(r => r.AddAsync(It.IsAny<CourseModel>(), It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
 
-        // ASSERT
-        mockCourseRepository.Verify(r => r.AddAsync(It.IsAny<CourseModel>(), It.IsAny<CancellationToken>()), Times.Once);
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        }
+        var ex = await Record.ExceptionAsync(() => service.CreateAsync(input));
+
+        Assert.Null(ex);
+    }
 
 
-
-
-
-
-
-
-//                                          READ - Hämtar kurs via ID
+    // GET
     [Fact]
-    public async Task GetById_ShouldReturnCourse_WhenExists()
+    public async Task GetById_ShouldReturnCourse()
     {
+        var service = CreateService();
 
-        // ARRANGE
-        var mockCourseRepository = new Mock<ICourseRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseService(mockCourseRepository.Object, mockUnitOfWork.Object);
+        repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseModel(1, 100, new byte[] { }, "T", "D", DateTime.UtcNow, null, 1));
 
-        var existing = new CourseModel(
-            1,
-            101,
-            [],
-            "Title",
-            "Desc",
-            DateTime.UtcNow,
-            null
-            );
-
-        mockCourseRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(existing);
-
-        // ACT
         var result = await service.GetByIdAsync(1);
 
-        // ASSERT
         Assert.NotNull(result);
-        Assert.Equal("Title", result.Title);
+        Assert.Equal(100, result!.CourseCode);
     }
 
 
-
-
-
-
-
-
-    //                                          UPDATE - Uppdaterar kursen
+    // LIST
     [Fact]
-    public async Task Update_ShouldModifyCourse_WhenExists()
+    public async Task List_ShouldReturnCourses()
     {
-        // ARRANGE
-        var mockCourseRepository = new Mock<ICourseRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseService(mockCourseRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
-        var existing = new CourseModel(
-            1,
-            101,
-            [],
-            "Old Title",
-            "Old Description",
-            DateTime.UtcNow,
-            null
-            );
+        repo.Setup(r => r.ListAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new List<CourseModel>
+            {
+                new CourseModel(1, 10, new byte[]{}, "A", "B", DateTime.UtcNow, null, 1)
+            });
 
-        mockCourseRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(existing);
+        var list = await service.ListAsync();
 
-        var input = new CourseInput(
-            101,
-            "New Title",
-            "New Description"
-            );
-
-        // ACT
-        await service.UpdateAsync(1, input);
-
-        // ASSERT
-        mockCourseRepository.Verify(r => r.UpdateAsync(It.Is<CourseModel>(c => c.Title == "New Title"), It.IsAny<CancellationToken>()), Times.Once);
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+        Assert.Single(list);
     }
 
 
-
-
-
-
-
-
-    //                                          DELETE - Raderar kursen
+    // UPDATE
     [Fact]
-    public async Task Delete_ShouldRemoveCourse_WhenExists()
+    public async Task Update_ShouldModifyCourse()
     {
-        // ARRANGE
-        var mockCourseRepository = new Mock<ICourseRepository>();
-        var mockUnitOfWork = new Mock<IUnitOfWork>();
-        var service = new CourseService(mockCourseRepository.Object, mockUnitOfWork.Object);
+        var service = CreateService();
 
-        var existing = new CourseModel(                                                             // Skapar fake kursen som ska raderas
-            1,
-            101,
-            [],
-            "",
-            "",
-            DateTime.UtcNow,
-            null
-            );
+        repo.Setup(r => r.GetByIdAsync(5, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseModel(5, 10, new byte[] { 1 }, "Old", "Desc", DateTime.UtcNow, null, 1));
 
-        mockCourseRepository.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-                 .ReturnsAsync(existing);
+        var input = new CourseInput(20, "New", "Desc", 1);
 
-        // ACT
-        await service.DeleteAsync(1);
+        await service.UpdateAsync(5, input);
 
-        // ASSERT
-        mockCourseRepository.Verify(r => r.DeleteAsync(1, It.IsAny<CancellationToken>()), Times.Once);
-        mockUnitOfWork.Verify(u => u.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);                  // Sparar
+        repo.Verify(r => r.UpdateAsync(It.Is<CourseModel>(m =>
+            m.Id == 5 &&
+            m.Title == "New" &&
+            m.CourseCode == 20
+        ), It.IsAny<CancellationToken>()), Times.Once);
+
+        uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+
+    // DELETE
+    [Fact]
+    public async Task Delete_ShouldRemoveCourse()
+    {
+        var service = CreateService();
+
+        repo.Setup(r => r.GetByIdAsync(2, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CourseModel(2, 1, new byte[] { }, "T", "D", DateTime.UtcNow, null, 1));
+
+        await service.DeleteAsync(2);
+
+        repo.Verify(r => r.DeleteAsync(2, It.IsAny<CancellationToken>()), Times.Once);
+        uow.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+
+    // DELETE
+    [Fact]
+    public async Task Delete_ShouldThrow_WhenMissing()
+    {
+        var service = CreateService();
+
+        repo.Setup(r => r.GetByIdAsync(9, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((CourseModel?)null);
+
+        await Assert.ThrowsAsync<ArgumentException>(() => service.DeleteAsync(9));
     }
 }

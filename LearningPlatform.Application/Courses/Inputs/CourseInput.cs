@@ -9,6 +9,7 @@ namespace LearningPlatform.Application.Courses.Inputs
     public sealed record CourseInput(
         int CourseCode,
         string Title,
-        string Description
+        string Description,
+        int TeacherId
         );
 }

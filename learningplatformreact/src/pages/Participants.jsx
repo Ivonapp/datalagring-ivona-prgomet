@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-
-const API = "https://localhost:7240/api/participants";
+import { useEffect, useState } from "react";
 
 export default function Participants() {
   const [participants, setParticipants] = useState([]);
@@ -11,54 +9,97 @@ export default function Participants() {
     phoneNumber: ""
   });
 
-  async function fetchParticipants() {
-    const res = await fetch(API);
-    setParticipants(await res.json());
+  const [editingId, setEditingId] = useState(null);
+
+  function load() {
+    fetch("https://localhost:7240/api/participants")
+      .then(r => r.json())
+      .then(setParticipants);
   }
 
-  useEffect(() => { fetchParticipants(); }, []);
+  useEffect(load, []);
 
-  const onChange = e =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  async function submit(e) {
+  function createParticipant(e) {
     e.preventDefault();
 
-    await fetch(API, {
+    fetch("https://localhost:7240/api/participants", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form)
+    }).then(() => {
+      setForm({ firstName: "", lastName: "", email: "", phoneNumber: "" });
+      load();
     });
-
-    setForm({ firstName: "", lastName: "", email: "", phoneNumber: "" });
-    fetchParticipants();
   }
 
-  async function remove(id) {
-    await fetch(`${API}/${id}`, { method: "DELETE" });
-    fetchParticipants();
+  function startEdit(p) {
+    setEditingId(p.id);
+    setForm({
+      firstName: p.firstName,
+      lastName: p.lastName,
+      email: p.email,
+      phoneNumber: p.phoneNumber
+    });
+  }
+
+  function updateParticipant(e) {
+    e.preventDefault();
+
+    fetch(`https://localhost:7240/api/participants/${editingId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form)
+    }).then(() => {
+      setEditingId(null);
+      setForm({ firstName: "", lastName: "", email: "", phoneNumber: "" });
+      load();
+    });
+  }
+
+  function deleteParticipant(id) {
+    fetch(`https://localhost:7240/api/participants/${id}`, {
+      method: "DELETE"
+    }).then(load);
   }
 
   return (
-    <div>
-      <h1>DELTAGARE</h1>
+    <div className="page">
+      <h1>Participants</h1>
 
-      <form onSubmit={submit}>
-        <input name="firstName" placeholder="Förnamn" value={form.firstName} onChange={onChange} required />
-        <input name="lastName" placeholder="Efternamn" value={form.lastName} onChange={onChange} required />
-        <input name="email" placeholder="Email" value={form.email} onChange={onChange} required />
-        <input name="phoneNumber" placeholder="Telefon" value={form.phoneNumber} onChange={onChange} required />
-        <button type="submit">Skapa</button>
+      <form onSubmit={editingId ? updateParticipant : createParticipant} className="form">
+        <input
+          placeholder="First name"
+          value={form.firstName}
+          onChange={e => setForm({ ...form, firstName: e.target.value })}
+        />
+        <input
+          placeholder="Last name"
+          value={form.lastName}
+          onChange={e => setForm({ ...form, lastName: e.target.value })}
+        />
+        <input
+          placeholder="Email"
+          value={form.email}
+          onChange={e => setForm({ ...form, email: e.target.value })}
+        />
+        <input
+          placeholder="Phone"
+          value={form.phoneNumber}
+          onChange={e => setForm({ ...form, phoneNumber: e.target.value })}
+        />
+
+        <button>{editingId ? "Update" : "Create"}</button>
       </form>
 
-      <hr />
-
-      {participants.map(p => (
-        <div key={p.id}>
-          {p.firstName} {p.lastName}
-          <button onClick={() => remove(p.id)}>Radera</button>
-        </div>
-      ))}
+      <ul className="list">
+        {participants.map(p => (
+          <li key={p.id} className="item">
+            {p.firstName} {p.lastName} — {p.email}
+            <button onClick={() => startEdit(p)}>Edit</button>
+            <button onClick={() => deleteParticipant(p.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

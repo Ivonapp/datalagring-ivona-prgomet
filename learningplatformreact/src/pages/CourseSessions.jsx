@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-
-const BASE = "https://localhost:7240";
+import { useEffect, useState } from "react";
 
 export default function CourseSessions() {
   const [sessions, setSessions] = useState([]);
@@ -11,52 +9,59 @@ export default function CourseSessions() {
     endDate: ""
   });
 
-  async function fetchData() {
-    const [sRes, cRes] = await Promise.all([
-      fetch(`${BASE}/api/coursesessions`),
-      fetch(`${BASE}/api/courses`)
-    ]);
+  function load() {
+    fetch("https://localhost:7240/api/coursesessions")
+      .then(r => r.json())
+      .then(setSessions);
 
-    setSessions(await sRes.json());
-    setCourses(await cRes.json());
+    fetch("https://localhost:7240/api/courses")
+      .then(r => r.json())
+      .then(setCourses);
   }
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(load, []);
 
-  const onChange = e =>
+  function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
+  }
 
-  async function submit(e) {
+  function createSession(e) {
     e.preventDefault();
 
     const payload = {
-      courseId: parseInt(form.courseId),
-      startDate: new Date(form.startDate).toISOString(),
-      endDate: new Date(form.endDate).toISOString()
+      courseId: Number(form.courseId),
+      startDate: form.startDate,
+      endDate: form.endDate
     };
 
-    await fetch(`${BASE}/api/coursesessions`, {
+    fetch("https://localhost:7240/api/coursesessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
+    }).then(() => {
+      setForm({ courseId: "", startDate: "", endDate: "" });
+      load();
     });
-
-    setForm({ courseId: "", startDate: "", endDate: "" });
-    fetchData();
   }
 
-  async function remove(id) {
-    await fetch(`${BASE}/api/coursesessions/${id}`, { method: "DELETE" });
-    fetchData();
+  function removeSession(id) {
+    fetch(`https://localhost:7240/api/coursesessions/${id}`, {
+      method: "DELETE"
+    }).then(load);
   }
 
   return (
-    <div>
-      <h1>KURSTILLFÄLLEN</h1>
+    <div className="page">
+      <h1>Course Sessions</h1>
 
-      <form onSubmit={submit}>
-        <select name="courseId" value={form.courseId} onChange={onChange} required>
-          <option value="">Välj kurs</option>
+      <form onSubmit={createSession} className="form">
+        <select
+          name="courseId"
+          value={form.courseId}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select course</option>
           {courses.map(c => (
             <option key={c.id} value={c.id}>
               {c.title}
@@ -64,21 +69,37 @@ export default function CourseSessions() {
           ))}
         </select>
 
-        <input type="date" name="startDate" value={form.startDate} onChange={onChange} required />
-        <input type="date" name="endDate" value={form.endDate} onChange={onChange} required />
-        <button type="submit">Skapa</button>
+        <input
+          type="date"
+          name="startDate"
+          value={form.startDate}
+          onChange={handleChange}
+          required
+        />
+
+        <input
+          type="date"
+          name="endDate"
+          value={form.endDate}
+          onChange={handleChange}
+          required
+        />
+
+        <button>Create</button>
       </form>
 
-      <hr />
-
-      {sessions.map(s => (
-        <div key={s.id}>
-          CourseId: {s.courseId} | 
-          {new Date(s.startDate).toLocaleDateString()} - 
-          {new Date(s.endDate).toLocaleDateString()}
-          <button onClick={() => remove(s.id)}>Radera</button>
-        </div>
-      ))}
+      <ul className="list">
+        {sessions.map(s => (
+          <li key={s.id} className="item">
+            Course ID: {s.courseId}
+            <br />
+            {new Date(s.startDate).toLocaleDateString()} –{" "}
+            {new Date(s.endDate).toLocaleDateString()}
+            <br />
+            <button onClick={() => removeSession(s.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

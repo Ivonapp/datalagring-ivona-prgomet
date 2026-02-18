@@ -38,7 +38,8 @@ using LearningPlatform.Application.CourseSessions.PersistenceModels;
                 input.Title,
                 input.Description,
                 DateTime.UtcNow,
-                null
+                null,
+                input.TeacherId
             );
 
 

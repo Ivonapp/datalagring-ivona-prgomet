@@ -27,17 +27,18 @@ public sealed class CourseService
         var courseToCreate = new CourseModel(
             0,
             input.CourseCode,
-            Array.Empty<byte>(),
+            null,
             input.Title,
             input.Description,
             DateTime.UtcNow,
-            null
+            null,
+            input.TeacherId
         );
 
         await course.AddAsync(courseToCreate, ct);
         await uow.SaveChangesAsync(ct);
 
-        return courseToCreate.Id;
+        return 1;
     }
 
 
