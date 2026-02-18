@@ -34,10 +34,15 @@ namespace LearningPlatform.Infrastructure.EFC.Repositories
         //INGEN ID, UPDATEDAT, CONCURRENCY
         public override async Task AddAsync(CourseModel model, CancellationToken ct = default)
         {
+            if (model is null) throw new ArgumentNullException(nameof(model));
+
+            // Validate teacher exists to avoid FK violation
+            if (model.TeacherId <= 0 || !await Context.Set<TeacherEntity>().AnyAsync(t => t.Id == model.TeacherId, ct))
+                throw new ArgumentException($"Teacher {model.TeacherId} not found.");
+
             var entity = new CourseEntity
             {
-
-
+                TeacherId = model.TeacherId,
                 CourseCode = model.CourseCode,
                 Title = model.Title,
                 Description = model.Description,
@@ -69,6 +74,9 @@ namespace LearningPlatform.Infrastructure.EFC.Repositories
         }
     }
 }
+
+
+
 
 
 

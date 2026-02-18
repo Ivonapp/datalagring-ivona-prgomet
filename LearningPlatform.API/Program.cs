@@ -14,6 +14,7 @@ using LearningPlatform.Application.Services;
 using LearningPlatform.Application.Teachers;
 using LearningPlatform.Application.Teachers.Inputs;
 using LearningPlatform.Infrastructure.EFC.Data;
+using LearningPlatform.Infrastructure.EFC.Entities;
 using LearningPlatform.Infrastructure.EFC.Repositories;
 using LearningPlatform.Infrastructure.EFC.UnitOfWork;
 using LearningPlatform.Infrastructure.Extensions;
@@ -59,6 +60,30 @@ var app = builder.Build();
 
 
 
+
+//**
+//EVENTUELLT FÖR ATT SLIPPA FÅ FELET HELA TIDEN FÖR LÄRARE
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<InfrastructureDbContext>();
+
+    if (!context.Teachers.Any())
+    {
+        context.Teachers.Add(new TeacherEntity
+        {
+            FirstName = "Anna",
+            LastName = "Andersson",
+            Email = "anna@test.com",
+            PhoneNumber = "0701234567",
+            Major = "Math",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        context.SaveChanges();
+    }
+}
+//**
 
 
 
