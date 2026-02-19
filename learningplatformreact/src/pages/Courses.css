@@ -1,0 +1,50 @@
+.page {
+  padding: 20px;
+}
+
+.form input, .form select, .form button {
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.Tabell, .item {
+  display: grid;
+  grid-template-columns: 2fr 1fr 2fr 1fr;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid #ccc;
+}
+
+.Tabell {
+  font-weight: bold;
+  border-bottom: 2px solid #000;
+}
+
+.list {
+  margin-top: 10px;
+}
+
+button.edit-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 3px 8px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+button.delete-btn {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+button.edit-btn:hover {
+  background-color: #45a049;
+}
+
+button.delete-btn:hover {
+  background-color: #d32f2f;
+}

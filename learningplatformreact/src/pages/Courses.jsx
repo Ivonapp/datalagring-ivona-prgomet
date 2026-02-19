@@ -1,109 +1,97 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import "./Courses.css";
 
-const Courses = () => {
+export default function Courses() {
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
-  const [selectedCourse, setSelectedCourse] = useState(null);
   const [form, setForm] = useState({
     title: "",
     description: "",
     courseCode: "",
     teacherId: "",
   });
+  const [editingId, setEditingId] = useState(null);
 
   const coursesApi = "https://localhost:7240/api/courses";
   const teachersApi = "https://localhost:7240/api/teachers";
 
-  // Hämta kurser
-  const fetchCourses = async () => {
-    const res = await fetch(coursesApi);
-    const data = await res.json();
-    setCourses(data);
-  };
+  function loadCourses() {
+    fetch(coursesApi)
+      .then((r) => r.json())
+      .then(setCourses);
+  }
 
-  // Hämta lärare
-  const fetchTeachers = async () => {
-    const res = await fetch(teachersApi);
-    const data = await res.json();
-    setTeachers(data);
-  };
+  function loadTeachers() {
+    fetch(teachersApi)
+      .then((r) => r.json())
+      .then(setTeachers);
+  }
 
-  // Hämta kursdetalj
-  const fetchCourseDetail = async (id) => {
-    const res = await fetch(`${coursesApi}/${id}`);
-    const data = await res.json();
-    setSelectedCourse(data);
-    setForm({
-      title: data.title || "",
-      description: data.description || "",
-      courseCode: data.courseCode || "",
-      teacherId: data.teacherId || "",
-    });
-  };
+  useEffect(() => {
+    loadCourses();
+    loadTeachers();
+  }, []);
 
-  // Skapa kurs
-  const createCourse = async () => {
-    if (!form.teacherId) {
-      alert("Please select a teacher!");
-      return;
-    }
+  function createCourse(e) {
+    e.preventDefault();
+    if (!form.teacherId) return alert("Please select a teacher!");
 
-    await fetch(coursesApi, {
+    fetch(coursesApi, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: form.title,
-        description: form.description,
-        courseCode: form.courseCode,
+        ...form,
         teacherId: Number(form.teacherId),
       }),
+    }).then(() => {
+      setForm({ title: "", description: "", courseCode: "", teacherId: "" });
+      loadCourses();
     });
+  }
 
-    setForm({ title: "", description: "", courseCode: "", teacherId: "" });
-    fetchCourses();
-  };
+  function startEdit(course) {
+    setEditingId(course.id);
+    setForm({
+      title: course.title,
+      description: course.description,
+      courseCode: course.courseCode,
+      teacherId: course.teacherId || "",
+    });
+  }
 
-  // Uppdatera kurs
-  const updateCourse = async (id) => {
-    if (!form.teacherId) {
-      alert("Please select a teacher!");
-      return;
-    }
+  function updateCourse(e) {
+    e.preventDefault();
+    if (!form.teacherId) return alert("Please select a teacher!");
 
-    await fetch(`${coursesApi}/${id}`, {
+    fetch(`${coursesApi}/${editingId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        title: form.title,
-        description: form.description,
-        courseCode: form.courseCode,
+        ...form,
         teacherId: Number(form.teacherId),
       }),
+    }).then(() => {
+      setEditingId(null);
+      setForm({ title: "", description: "", courseCode: "", teacherId: "" });
+      loadCourses();
     });
+  }
 
-    setSelectedCourse(null);
-    setForm({ title: "", description: "", courseCode: "", teacherId: "" });
-    fetchCourses();
-  };
+  function deleteCourse(id) {
+    fetch(`${coursesApi}/${id}`, { method: "DELETE" }).then(loadCourses);
+  }
 
-  // Ta bort kurs
-  const deleteCourse = async (id) => {
-    await fetch(`${coursesApi}/${id}`, { method: "DELETE" });
-    fetchCourses();
-  };
-
-  useEffect(() => {
-    fetchCourses();
-    fetchTeachers();
-  }, []);
+  function getTeacherName(id) {
+    const teacher = teachers.find((t) => t.id === id);
+    return teacher ? `${teacher.firstName} ${teacher.lastName}` : "Unknown";
+  }
 
   return (
-    <div>
+    <div className="page">
       <h1>Courses</h1>
 
-      {/* CREATE FORM */}
-      <div>
-        <h2>Create Course</h2>
+      {/* Form for Create / Update */}
+      <form onSubmit={editingId ? updateCourse : createCourse} className="form">
         <input
           placeholder="Title"
           value={form.title}
@@ -119,8 +107,6 @@ const Courses = () => {
           value={form.courseCode}
           onChange={(e) => setForm({ ...form, courseCode: e.target.value })}
         />
-
-        {/* Dropdown för att välja teacher */}
         <select
           value={form.teacherId}
           onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
@@ -132,85 +118,31 @@ const Courses = () => {
             </option>
           ))}
         </select>
+        <button>{editingId ? "Update" : "Create"}</button>
+      </form>
 
-        <button onClick={createCourse}>Create</button>
+      {/* Table headers */}
+      <div className="Tabell">
+        <div>Title</div>
+        <div>Course Code</div>
+        <div>Teacher</div>
+        <div>Actions</div>
       </div>
 
-      {/* LIST COURSES */}
-      <h2>All Courses</h2>
-      <ul>
+      {/* Courses List */}
+      <div className="list">
         {courses.map((c) => (
-          <li key={c.id}>
-            {c.title} ({c.courseCode}) — Teacher:{" "}
-            {c.teacherFirstName && c.teacherLastName
-              ? `${c.teacherFirstName} ${c.teacherLastName}`
-              : "Unknown"}
-            <button onClick={() => fetchCourseDetail(c.id)}>Details</button>
-            <button onClick={() => deleteCourse(c.id)}>Delete</button>
-          </li>
+          <div key={c.id} className="item">
+            <div>{c.title}</div>
+            <div>{c.courseCode}</div>
+            <div>{getTeacherName(c.teacherId)}</div>
+            <div>
+              <button className="edit-btn" onClick={() => startEdit(c)}>Edit</button>
+              <button className="delete-btn" onClick={() => deleteCourse(c.id)}>Delete</button>
+            </div>
+          </div>
         ))}
-      </ul>
-
-      {/* DETAIL & UPDATE */}
-      {selectedCourse && (
-        <div>
-          <h2>Course Details</h2>
-          <p>ID: {selectedCourse.id}</p>
-          <p>Title: {selectedCourse.title}</p>
-          <p>Description: {selectedCourse.description}</p>
-          <p>Course Code: {selectedCourse.courseCode}</p>
-          <p>
-            Teacher:{" "}
-            {selectedCourse.teacherFirstName && selectedCourse.teacherLastName
-              ? `${selectedCourse.teacherFirstName} ${selectedCourse.teacherLastName}`
-              : "Unknown"}
-          </p>
-
-          <h3>Course Sessions</h3>
-          <ul>
-            {selectedCourse.courseSessions?.map((cs) => (
-              <li key={cs.id}>
-                {new Date(cs.startDate).toLocaleDateString()} -{" "}
-                {new Date(cs.endDate).toLocaleDateString()} | Enrollments:{" "}
-                {cs.enrollments?.length || 0}
-              </li>
-            ))}
-          </ul>
-
-          <h3>Update Course</h3>
-          <input
-            placeholder="Title"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-          />
-          <input
-            placeholder="Description"
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-          />
-          <input
-            placeholder="Course Code"
-            value={form.courseCode}
-            onChange={(e) => setForm({ ...form, courseCode: e.target.value })}
-          />
-          <select
-            value={form.teacherId}
-            onChange={(e) => setForm({ ...form, teacherId: e.target.value })}
-          >
-            <option value="">Select Teacher</option>
-            {teachers.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.firstName} {t.lastName}
-              </option>
-            ))}
-          </select>
-
-          <button onClick={() => updateCourse(selectedCourse.id)}>Update</button>
-          <button onClick={() => setSelectedCourse(null)}>Close</button>
-        </div>
-      )}
+      </div>
     </div>
   );
-};
-
-export default Courses;
+}

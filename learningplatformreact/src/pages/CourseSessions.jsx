@@ -1,75 +1,87 @@
 import { useEffect, useState } from "react";
+import "./Teachers.css"; // Återanvänd samma CSS
 
 export default function CourseSessions() {
   const [sessions, setSessions] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [form, setForm] = useState({
-    courseId: "",
-    startDate: "",
-    endDate: ""
-  });
+  const [form, setForm] = useState({ courseId: "", startDate: "", endDate: "" });
+  const [editingId, setEditingId] = useState(null);
+
+  const apiUrl = "https://localhost:7240/api/coursesessions";
 
   // Hämta sessions och courses
   function load() {
-    fetch("https://localhost:7240/api/coursesessions")
-      .then(r => r.json())
-      .then(setSessions);
-
-    fetch("https://localhost:7240/api/courses")
-      .then(r => r.json())
-      .then(setCourses);
+    fetch(apiUrl).then(r => r.json()).then(setSessions);
+    fetch("https://localhost:7240/api/courses").then(r => r.json()).then(setCourses);
   }
 
   useEffect(load, []);
 
-  // Hantera inputändringar
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  // Skapa session
+  function startEdit(session) {
+    setEditingId(session.id);
+    setForm({
+      courseId: session.courseId,
+      startDate: session.startDate.slice(0, 10),
+      endDate: session.endDate.slice(0, 10),
+    });
+  }
+
   function createSession(e) {
     e.preventDefault();
-
-    const payload = {
-      courseId: Number(form.courseId),
-      startDate: form.startDate,
-      endDate: form.endDate
-    };
-
-    fetch("https://localhost:7240/api/coursesessions", {
+    fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+      body: JSON.stringify({
+        courseId: Number(form.courseId),
+        startDate: form.startDate,
+        endDate: form.endDate,
+      }),
     }).then(() => {
       setForm({ courseId: "", startDate: "", endDate: "" });
       load();
     });
   }
 
-  // Ta bort session
+  function updateSession(e) {
+    e.preventDefault();
+    fetch(`${apiUrl}/${editingId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        courseId: Number(form.courseId),
+        startDate: form.startDate,
+        endDate: form.endDate,
+      }),
+    }).then(() => {
+      setEditingId(null);
+      setForm({ courseId: "", startDate: "", endDate: "" });
+      load();
+    });
+  }
+
   function removeSession(id) {
-    fetch(`https://localhost:7240/api/coursesessions/${id}`, {
-      method: "DELETE"
-    }).then(load);
+    fetch(`${apiUrl}/${id}`, { method: "DELETE" }).then(load);
   }
 
   return (
     <div className="page">
       <h1>Course Sessions</h1>
 
-      <form onSubmit={createSession} className="form">
+      {/* Form for Create / Update */}
+      <form onSubmit={editingId ? updateSession : createSession} className="form">
         <select
           name="courseId"
           value={form.courseId}
           onChange={handleChange}
           required
         >
-          <option value="">Select course</option>
+          <option value="">Select Course</option>
           {courses.map(c => (
-            <option key={c.id} value={c.id}>
-              {c.title}
-            </option>
+            <option key={c.id} value={c.id}>{c.title}</option>
           ))}
         </select>
 
@@ -80,7 +92,6 @@ export default function CourseSessions() {
           onChange={handleChange}
           required
         />
-
         <input
           type="date"
           name="endDate"
@@ -89,22 +100,34 @@ export default function CourseSessions() {
           required
         />
 
-        <button>Create</button>
+        <button>{editingId ? "Update" : "Create"}</button>
       </form>
 
-      <h2>All Sessions</h2>
-      <ul className="list">
+      {/* Table headers */}
+      <div className="Tabell">
+        <div>Course</div>
+        <div>Start Date</div>
+        <div>End Date</div>
+        <div>Actions</div>
+      </div>
+
+      {/* Sessions List */}
+      <div className="list">
         {sessions.map(s => {
           const course = courses.find(c => c.id === s.courseId);
           return (
-            <li key={s.id} className="item">
-              Course: {course ? course.title : `Course ${s.courseId}`} <br />
-              {new Date(s.startDate).toLocaleDateString()} – {new Date(s.endDate).toLocaleDateString()} <br />
-              <button onClick={() => removeSession(s.id)}>Delete</button>
-            </li>
+            <div key={s.id} className="item">
+              <div>{course ? course.title : `Course ${s.courseId}`}</div>
+              <div>{new Date(s.startDate).toLocaleDateString()}</div>
+              <div>{new Date(s.endDate).toLocaleDateString()}</div>
+              <div>
+                <button className="edit-btn" onClick={() => startEdit(s)}>Edit</button>
+                <button className="delete-btn" onClick={() => removeSession(s.id)}>Delete</button>
+              </div>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }
