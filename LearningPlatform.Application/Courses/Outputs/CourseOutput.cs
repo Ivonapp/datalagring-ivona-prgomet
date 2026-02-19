@@ -14,7 +14,10 @@ namespace LearningPlatform.Application.Courses.Outputs
         int CourseCode,
         string Title,
         string Description,
-        DateTime CreatedAt
+        DateTime CreatedAt,
+        int TeacherId,
+        string TeacherFirstName,
+        string TeacherLastName
 
         );
 }

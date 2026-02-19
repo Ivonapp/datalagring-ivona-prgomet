@@ -14,9 +14,10 @@ public sealed class CourseServiceTest
 {
     private readonly Mock<ICourseRepository> repo = new();
     private readonly Mock<IUnitOfWork> uow = new();
+    private readonly Mock<ITeacherRepository> teacherrepo = new();
 
     private CourseService CreateService()
-        => new(repo.Object, uow.Object);
+        => new(repo.Object, uow.Object, teacherrepo.Object);
 
 
     // CREATE
@@ -43,7 +44,7 @@ public sealed class CourseServiceTest
         var service = CreateService();
 
         repo.Setup(r => r.GetByIdAsync(1, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CourseModel(1, 100, new byte[] { }, "T", "D", DateTime.UtcNow, null, 1));
+            .ReturnsAsync(new CourseModel(1, 100, new byte[] { }, "T", "D", DateTime.UtcNow, null, 1, null, null));
 
         var result = await service.GetByIdAsync(1);
 
@@ -61,7 +62,7 @@ public sealed class CourseServiceTest
         repo.Setup(r => r.ListAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(new List<CourseModel>
             {
-                new CourseModel(1, 10, new byte[]{}, "A", "B", DateTime.UtcNow, null, 1)
+                new CourseModel(1, 10, new byte[]{}, "A", "B", DateTime.UtcNow, null, 1, null, null)
             });
 
         var list = await service.ListAsync();
@@ -77,7 +78,7 @@ public sealed class CourseServiceTest
         var service = CreateService();
 
         repo.Setup(r => r.GetByIdAsync(5, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CourseModel(5, 10, new byte[] { 1 }, "Old", "Desc", DateTime.UtcNow, null, 1));
+            .ReturnsAsync(new CourseModel(5, 10, new byte[] { 1 }, "Old", "Desc", DateTime.UtcNow, null, 1, null, null));
 
         var input = new CourseInput(20, "New", "Desc", 1);
 
@@ -100,7 +101,7 @@ public sealed class CourseServiceTest
         var service = CreateService();
 
         repo.Setup(r => r.GetByIdAsync(2, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new CourseModel(2, 1, new byte[] { }, "T", "D", DateTime.UtcNow, null, 1));
+            .ReturnsAsync(new CourseModel(2, 1, new byte[] { }, "T", "D", DateTime.UtcNow, null, 1, null, null));
 
         await service.DeleteAsync(2);
 

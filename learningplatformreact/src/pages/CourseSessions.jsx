@@ -9,6 +9,7 @@ export default function CourseSessions() {
     endDate: ""
   });
 
+  // Hämta sessions och courses
   function load() {
     fetch("https://localhost:7240/api/coursesessions")
       .then(r => r.json())
@@ -21,10 +22,12 @@ export default function CourseSessions() {
 
   useEffect(load, []);
 
+  // Hantera inputändringar
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
+  // Skapa session
   function createSession(e) {
     e.preventDefault();
 
@@ -44,6 +47,7 @@ export default function CourseSessions() {
     });
   }
 
+  // Ta bort session
   function removeSession(id) {
     fetch(`https://localhost:7240/api/coursesessions/${id}`, {
       method: "DELETE"
@@ -88,17 +92,18 @@ export default function CourseSessions() {
         <button>Create</button>
       </form>
 
+      <h2>All Sessions</h2>
       <ul className="list">
-        {sessions.map(s => (
-          <li key={s.id} className="item">
-            Course ID: {s.courseId}
-            <br />
-            {new Date(s.startDate).toLocaleDateString()} –{" "}
-            {new Date(s.endDate).toLocaleDateString()}
-            <br />
-            <button onClick={() => removeSession(s.id)}>Delete</button>
-          </li>
-        ))}
+        {sessions.map(s => {
+          const course = courses.find(c => c.id === s.courseId);
+          return (
+            <li key={s.id} className="item">
+              Course: {course ? course.title : `Course ${s.courseId}`} <br />
+              {new Date(s.startDate).toLocaleDateString()} – {new Date(s.endDate).toLocaleDateString()} <br />
+              <button onClick={() => removeSession(s.id)}>Delete</button>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

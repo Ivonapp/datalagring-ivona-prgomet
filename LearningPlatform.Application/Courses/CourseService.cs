@@ -15,7 +15,8 @@ namespace LearningPlatform.Application.Courses;
 public sealed class CourseService
     (
     ICourseRepository course,
-    IUnitOfWork uow
+    IUnitOfWork uow,
+     ITeacherRepository teacherRepository //
     ) : ICourseService
 
 {
@@ -32,7 +33,9 @@ public sealed class CourseService
             input.Description,
             DateTime.UtcNow,
             null,
-            input.TeacherId
+            input.TeacherId,
+            null,
+            null
         );
 
         await course.AddAsync(courseToCreate, ct);
@@ -57,16 +60,48 @@ public sealed class CourseService
     public async Task<CourseOutput?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         var model = await course.GetByIdAsync(id, ct);
-        return model is null ? null : CourseMapper.ToOutput(model);
+        if (model is null) return null;
+
+        // 🔹 NY FRÅN HÄR: hämta läraren och fyll ut namnet
+        var teacher = await teacherRepository.GetByIdAsync(model.TeacherId, ct);
+        return new CourseOutput(
+            model.Id,
+            model.CourseCode,
+            model.Title,
+            model.Description,
+            model.CreatedAt,
+            model.TeacherId,
+            teacher?.FirstName ?? "",   //  TeacherFirstName
+            teacher?.LastName ?? ""     //  TeacherLastName
+        );
     }
 
 
 
-    // LIST
+    // LIST /////////////////
     public async Task<IReadOnlyList<CourseOutput>> ListAsync(CancellationToken ct = default)
     {
         var models = await course.ListAsync(ct);
-        return CourseMapper.ToOutputList(models);
+        var list = new List<CourseOutput>();
+
+        // 🔹 Fyll ut lärarnamn för alla kurser
+        foreach (var model in models)
+        {
+            var teacher = await teacherRepository.GetByIdAsync(model.TeacherId, ct);
+
+            list.Add(new CourseOutput(
+                model.Id,
+                model.CourseCode,
+                model.Title,
+                model.Description,
+                model.CreatedAt,
+                model.TeacherId,
+                teacher?.FirstName ?? "",
+                teacher?.LastName ?? ""
+            ));
+        }
+
+        return list;
     }
 
 

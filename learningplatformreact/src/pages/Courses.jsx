@@ -37,7 +37,7 @@ const Courses = () => {
       title: data.title || "",
       description: data.description || "",
       courseCode: data.courseCode || "",
-      teacherId: data.teacher?.id || "",
+      teacherId: data.teacherId || "",
     });
   };
 
@@ -142,7 +142,9 @@ const Courses = () => {
         {courses.map((c) => (
           <li key={c.id}>
             {c.title} ({c.courseCode}) — Teacher:{" "}
-            {c.teacher ? `${c.teacher.firstName} ${c.teacher.lastName}` : "Unknown"}
+            {c.teacherFirstName && c.teacherLastName
+              ? `${c.teacherFirstName} ${c.teacherLastName}`
+              : "Unknown"}
             <button onClick={() => fetchCourseDetail(c.id)}>Details</button>
             <button onClick={() => deleteCourse(c.id)}>Delete</button>
           </li>
@@ -159,8 +161,8 @@ const Courses = () => {
           <p>Course Code: {selectedCourse.courseCode}</p>
           <p>
             Teacher:{" "}
-            {selectedCourse.teacher
-              ? `${selectedCourse.teacher.firstName} ${selectedCourse.teacher.lastName}`
+            {selectedCourse.teacherFirstName && selectedCourse.teacherLastName
+              ? `${selectedCourse.teacherFirstName} ${selectedCourse.teacherLastName}`
               : "Unknown"}
           </p>
 

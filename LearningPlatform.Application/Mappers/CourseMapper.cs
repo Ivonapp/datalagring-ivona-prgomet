@@ -3,6 +3,7 @@ using LearningPlatform.Application.Courses.Outputs;
 using LearningPlatform.Application.Courses.PersistenceModels;
 using LearningPlatform.Application.CourseSessions.Outputs;
 using LearningPlatform.Application.CourseSessions.PersistenceModels;
+using LearningPlatform.Domain.Entities;
 
 
 
@@ -20,7 +21,10 @@ using LearningPlatform.Application.CourseSessions.PersistenceModels;
                 model.CourseCode,
                 model.Title,
                 model.Description,
-                model.CreatedAt
+                model.CreatedAt,
+                model.TeacherId,
+                model.TeacherFirstName ?? "",
+                model.TeacherLastName ?? ""
             );
 
 
@@ -39,7 +43,9 @@ using LearningPlatform.Application.CourseSessions.PersistenceModels;
                 input.Description,
                 DateTime.UtcNow,
                 null,
-                input.TeacherId
+                input.TeacherId,
+                null,
+                null
             );
 
 
